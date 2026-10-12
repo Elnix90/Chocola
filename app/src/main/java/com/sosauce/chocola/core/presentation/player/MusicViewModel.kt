@@ -305,7 +305,7 @@ class MusicViewModel(
     private fun loadPlaybackPreferences() {
         viewModelScope.launch {
 
-            val savedMusicState = userPreferences.getSavedMusicState()]
+            val savedMusicState = userPreferences.getSavedMusicState()
 
             mediaController?.run {
                 if (mediaItemCount > 0 || currentMediaItem != null) {
