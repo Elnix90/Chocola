@@ -65,6 +65,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 
 @Composable
 fun Artwork(
@@ -114,30 +115,25 @@ fun Artwork(
                 initialItem = musicState.mediaIndex
             ) { musicState.loadedMedias.size }
 
-            LaunchedEffect(musicState.mediaIndex) {
-                if (musicState.mediaIndex in musicState.loadedMedias.indices &&
-                    carouselState.currentItem != musicState.mediaIndex &&
-                    !carouselState.isScrollInProgress
-                ) {
-                    carouselState.animateScrollToItem(musicState.mediaIndex)
-                }
-            }
-
             val currentTrack by rememberUpdatedState(musicState.track)
             val loadedMedias by rememberUpdatedState(musicState.loadedMedias)
+
+            LaunchedEffect(musicState.loadedMedias, musicState.track.mediaId) {
+                val target = musicState.loadedMedias.indexOfFirst { it.mediaId == musicState.track.mediaId }
+                if (target != -1 && carouselState.currentItem != target) {
+                    carouselState.animateScrollToItem(target)
+                }
+            }
 
             LaunchedEffect(carouselState) {
                 snapshotFlow { carouselState.isScrollInProgress }
                     .filter { !it }
-                    .map { carouselState.currentItem }
+                    .mapLatest { carouselState.currentItem }
                     .distinctUntilChanged()
-                    .collectLatest { settledIndex ->
-                        if (settledIndex !in loadedMedias.indices) return@collectLatest
-
-                        val targetTrack = loadedMedias[settledIndex]
-
-                        if (targetTrack.mediaId != currentTrack.mediaId) {
-                            onHandlePlayerActions(PlayerActions.PlayTrack(targetTrack))
+                    .collectLatest { settled ->
+                        val track = loadedMedias.getOrNull(settled) ?: return@collectLatest
+                        if (track.mediaId != currentTrack.mediaId) {
+                            onHandlePlayerActions(PlayerActions.PlayTrack(track))
                         }
                     }
             }
