@@ -12,6 +12,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.util.fastFilter
+import androidx.compose.ui.util.fastFirst
 import androidx.compose.ui.util.fastFirstOrNull
 import androidx.compose.ui.util.fastMap
 import androidx.lifecycle.AndroidViewModel
@@ -259,8 +260,6 @@ class MusicViewModel(
             }
         }
 
-
-
         _musicState.update {
             it.copy(
                 loadedMedias = newTracks,
@@ -398,10 +397,7 @@ class MusicViewModel(
             is PlayerActions.RewindTo -> mediaController!!.seekTo(mediaController!!.currentPosition - action.position)
             is PlayerActions.PlayTrack -> {
                 val targetMediaId = action.track.mediaId
-
-                val index = (0 until mediaController!!.mediaItemCount).firstOrNull { index ->
-                    mediaController!!.getMediaItemAt(index).mediaId == targetMediaId
-                }
+                val index = _musicState.value.loadedMedias.indexOfFirst { it.mediaId == targetMediaId }.takeIf { it != -1 }
 
                 index?.let { index ->
                     mediaController!!.seekTo(index, 0)
@@ -458,25 +454,30 @@ class MusicViewModel(
                 }
 
                 if (random) {
-                    val mediaItems = targetTracks.fastMap { it.toMediaItem() }
-                    mediaController?.apply {
-                        setMediaItems(mediaItems)
-                        playRandom()
-                    }
-                } else {
-                    val index =
-                        targetTracks.indexOfFirst { it.mediaId == action.mediaId }.coerceAtLeast(0)
+                    mediaController!!.setMediaItems(targetTracks.fastMap { it.toMediaItem() })
+                    mediaController!!.playRandom()
+                    return
+                }
 
-                    if (targetTracks == musicState.value.loadedMedias) {
-                        mediaController?.seekTo(index, 0)
-                        mediaController?.play()
-                    } else {
-                        val mediaItems = targetTracks.fastMap { it.toMediaItem() }
-                        mediaController?.apply {
-                            setMediaItems(mediaItems, index, 0)
-                            play()
+
+                // checks whether the passed queue is the exact same (order sensitive) as the currently loaded one
+                val sameQueue = mediaController!!.mediaItemCount == targetTracks.size &&
+                        targetTracks.indices.all {
+                            mediaController!!.getMediaItemAt(it).mediaId == targetTracks[it].mediaId
                         }
-                    }
+
+
+                if (sameQueue) {
+                    // if same queue, use player's index
+                    val playerIndex = _musicState.value.loadedMedias.indexOfFirst { it.mediaId == action.mediaId }
+                    mediaController!!.seekTo(playerIndex, 0)
+                    mediaController!!.play()
+                } else {
+                    val startIndex = targetTracks
+                        .indexOfFirst { it.mediaId == action.mediaId }
+                        .coerceAtLeast(0)
+                    mediaController!!.setMediaItems(targetTracks.fastMap { it.toMediaItem() }, startIndex, 0)
+                    mediaController!!.play()
                 }
 
 
