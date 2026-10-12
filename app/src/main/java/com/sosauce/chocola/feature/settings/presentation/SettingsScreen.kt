@@ -11,15 +11,21 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.LinearWavyProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
@@ -108,6 +114,12 @@ fun SettingsScreen(
             name = stringResource(R.string.library),
             description = stringResource(R.string.library_desc),
             onNavigate = { backstack.navigate(SettingsScreen.Library) }
+        ),
+        Item(
+            icon = R.drawable.backup,
+            name = stringResource(R.string.backup_and_restore),
+            description = stringResource(R.string.backup_and_restore_desc),
+            onNavigate = { backstack.navigate(SettingsScreen.Backup) }
         )
     )
 
@@ -270,6 +282,49 @@ fun SettingsScreen(
                                 onToggleAod = { toggle ->
                                     showAod = toggle
                                 }
+                            )
+                        }
+                    }
+                }
+
+                entry<SettingsScreen.Backup> {
+
+                    val viewModel = koinViewModel<BackupViewModel>()
+                    val state by viewModel.state.collectAsStateWithLifecycle()
+
+                    ObserveAsEvents(viewModel.events) { event ->
+
+                        val text = when(event) {
+                            is BackupEvents.Success -> resources.getString(R.string.success)
+                            is BackupEvents.Error -> event.message ?: resources.getString(R.string.generic_error)
+                        }
+                        Toast.makeText(context, text, Toast.LENGTH_SHORT).show()
+                    }
+
+                    if (state.isImporting) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(horizontal = 10.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.importing_in_progress)
+                                )
+                                LinearWavyProgressIndicator()
+
+                            }
+                        }
+                    } else {
+                        Column(
+                            modifier = Modifier
+                                .verticalScroll(scrollState)
+                                .padding(paddingValues)
+                        ) {
+                            SettingsBackup(
+                                onBackupAction = viewModel::onAction
                             )
                         }
                     }

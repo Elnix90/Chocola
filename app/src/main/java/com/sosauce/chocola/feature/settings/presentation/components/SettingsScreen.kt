@@ -29,4 +29,7 @@ sealed class SettingsScreen : NavKey {
 
     @Serializable
     data object AlwaysOnDisplay : SettingsScreen()
+
+    @Serializable
+    data object Backup : SettingsScreen()
 }

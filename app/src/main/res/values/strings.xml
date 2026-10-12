@@ -261,6 +261,13 @@
     <string name="enable_gestures">Enable gestures</string>
     <string name="enable_gestures_desc">If disabled, you can still exit the screen by double tapping it.</string>
     <string name="show_controls">Show controls</string>
+    <string name="backup_and_restore"><![CDATA[Backup & restore]]></string>
+    <string name="export_settings">Export settings</string>
+    <string name="backup_and_restore_desc">Backup and restore, what do you expect?</string>
+    <string name="import_settings">Import settings</string>
+    <string name="import_settings_desc">Import app settings from a JSON file.</string>
+    <string name="export_settings_desc">Export app settings to a JSON file.</string>
+    <string name="importing_in_progress">Importing, this shouldn\'t take too long…</string>
 
 
     <plurals name="tracks_plural">

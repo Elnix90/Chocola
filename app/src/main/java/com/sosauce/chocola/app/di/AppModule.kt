@@ -26,6 +26,7 @@ import com.sosauce.chocola.feature.metadata.presentation.MetadataViewModel
 import com.sosauce.chocola.feature.playlists.presentation.PlaylistDetailsViewModel
 import com.sosauce.chocola.feature.playlists.presentation.PlaylistViewModel
 import com.sosauce.chocola.feature.quickplay.presentation.QuickPlayViewModel
+import com.sosauce.chocola.feature.settings.presentation.BackupViewModel
 import com.sosauce.chocola.feature.settings.presentation.FoldersViewModel
 import com.sosauce.chocola.feature.settings.presentation.PlaybackSettingsViewModel
 import com.sosauce.chocola.feature.settings.presentation.SettingsLibraryViewModel
@@ -83,4 +84,5 @@ val appModule = module {
     viewModelOf(::LyricsEditorViewModel)
     viewModelOf(::SettingsLibraryViewModel)
     viewModelOf(::TracksDetailsDialogViewModel)
+    viewModelOf(::BackupViewModel)
 }
