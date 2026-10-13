@@ -3,6 +3,7 @@
 package com.sosauce.chocola.feature.playlists.presentation
 
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.util.fastFilter
 import androidx.lifecycle.ViewModel
@@ -72,6 +73,7 @@ class PlaylistDetailsViewModel(
 
 }
 
+@Stable
 data class PlaylistDetailsState(
     val isLoading: Boolean = true,
     val playlist: Playlist = Playlist(),

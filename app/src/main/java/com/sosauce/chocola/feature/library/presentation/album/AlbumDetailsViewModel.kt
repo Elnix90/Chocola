@@ -3,6 +3,7 @@
 package com.sosauce.chocola.feature.library.presentation.album
 
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.util.fastFilter
 import androidx.lifecycle.ViewModel
@@ -67,6 +68,7 @@ class AlbumDetailsViewModel(
 
 }
 
+@Stable
 data class AlbumDetailsState(
     val isLoading: Boolean = true,
     val album: Album = Album()

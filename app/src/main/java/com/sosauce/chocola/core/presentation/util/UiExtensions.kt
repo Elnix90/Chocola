@@ -86,7 +86,6 @@ fun Player.pauseWithFadeOut(durationMs: Long = 1000, steps: Int = 10) {
             }
         }
     }
-
     handler.post(fadeRunnable)
 }
 

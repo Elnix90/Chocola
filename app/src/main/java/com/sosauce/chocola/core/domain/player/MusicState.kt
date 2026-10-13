@@ -1,10 +1,12 @@
 package com.sosauce.chocola.core.domain.player
 
 import androidx.media3.common.Player
+import androidx.compose.runtime.Stable
 import com.sosauce.chocola.core.domain.model.CuteTrack
 import com.sosauce.chocola.core.domain.model.Lyrics
 import kotlinx.serialization.Serializable
 
+@Stable
 @Serializable
 data class MusicState(
     val track: CuteTrack = CuteTrack(),

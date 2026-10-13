@@ -25,15 +25,15 @@ import com.sosauce.chocola.core.domain.model.Folder
 fun LazyListScope.foldersView(
     whitelisted: List<Folder>,
     blacklisted: List<Folder>,
-    onBatchEdit: (List<String>) -> Unit,
-    onSingleEdit: (String) -> Unit,
+    onBlacklist: (List<String>) -> Unit,
+    onWhitelist: (List<String>) -> Unit,
 ) {
     if (whitelisted.isNotEmpty()) {
         item(key = "whitelist_header") {
             FolderHeader(
                 modifier = Modifier.animateItem(),
                 onClick = {
-                    onBatchEdit(
+                    onBlacklist(
                         whitelisted.fastMap { it.path }
                     )
                 },
@@ -48,11 +48,14 @@ fun LazyListScope.foldersView(
     ) { index, folder ->
         FolderItem(
             folder = folder.path,
-            topDp = if (index == 0) 24.dp else 4.dp,
-            bottomDp = if (index == whitelisted.lastIndex) 24.dp else 4.dp,
+            topDp = if (index == 0) 24.dp else 2.dp,
+            bottomDp = if (index == whitelisted.lastIndex) 24.dp else 2.dp,
             actionButton = {
                 IconButton(
-                    onClick = { onSingleEdit(folder.path) }
+                    onClick = {
+                        onBlacklist(listOf(folder.path))
+                    },
+                    shapes = IconButtonDefaults.shapes()
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.close),
@@ -67,7 +70,7 @@ fun LazyListScope.foldersView(
             FolderHeader(
                 modifier = Modifier.animateItem(),
                 onClick = {
-                    onBatchEdit(
+                    onWhitelist(
                         blacklisted.fastMap { it.path }
                     )
                 },
@@ -86,7 +89,8 @@ fun LazyListScope.foldersView(
             bottomDp = if (index == blacklisted.lastIndex) 24.dp else 2.dp,
             actionButton = {
                 IconButton(
-                    onClick = { onSingleEdit(folder.path) }
+                    onClick = { onWhitelist(listOf(folder.path)) },
+                    shapes = IconButtonDefaults.shapes()
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.add),

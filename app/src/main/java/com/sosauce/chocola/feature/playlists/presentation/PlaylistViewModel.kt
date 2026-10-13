@@ -6,6 +6,7 @@ import android.app.Application
 import android.provider.MediaStore
 import android.widget.Toast
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -183,6 +184,7 @@ class PlaylistViewModel(
     }
 }
 
+@Stable
 data class PlaylistsState(
     val isLoading: Boolean = false,
     val playlists: List<Playlist> = emptyList()

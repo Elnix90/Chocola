@@ -3,6 +3,7 @@ package com.sosauce.chocola.feature.lyrics.presentation
 import android.app.Application
 import android.net.Uri
 import android.widget.Toast
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.util.fastForEachIndexed
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -89,6 +90,7 @@ class LyricsEditorViewModel(
 }
 
 
+@Stable
 data class LyricsEditorState(
     val lyrics: List<Lyrics> = emptyList()
 )

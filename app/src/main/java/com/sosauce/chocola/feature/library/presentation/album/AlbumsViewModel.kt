@@ -3,6 +3,7 @@
 package com.sosauce.chocola.feature.library.presentation.album
 
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -96,6 +97,7 @@ class AlbumsViewModel(
 }
 
 
+@Stable
 data class AlbumsState(
     val isLoading: Boolean = true,
     val albums: List<Album> = emptyList()

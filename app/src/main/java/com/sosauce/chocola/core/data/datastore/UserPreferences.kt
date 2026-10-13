@@ -18,6 +18,8 @@ import com.sosauce.chocola.core.data.backup.SETTINGS_BACKUP_APP_NAME
 import com.sosauce.chocola.core.data.backup.SettingType
 import com.sosauce.chocola.core.data.datastore.PreferencesKeys.ALBUM_SORT
 import com.sosauce.chocola.core.data.datastore.PreferencesKeys.ARTIST_SORT
+import com.sosauce.chocola.core.data.datastore.PreferencesKeys.AUTO_ADD_SUBFOLDERS
+import com.sosauce.chocola.core.data.datastore.PreferencesKeys.BLACKLISTED_FOLDERS
 import com.sosauce.chocola.core.data.datastore.PreferencesKeys.EQUALIZER_ENABLED
 import com.sosauce.chocola.core.data.datastore.PreferencesKeys.EQUALIZER_GAINS
 import com.sosauce.chocola.core.data.datastore.PreferencesKeys.HIDDEN_FOLDERS
@@ -25,6 +27,7 @@ import com.sosauce.chocola.core.data.datastore.PreferencesKeys.HIDDEN_TRACKS
 import com.sosauce.chocola.core.data.datastore.PreferencesKeys.LAST_MUSIC_STATE
 import com.sosauce.chocola.core.data.datastore.PreferencesKeys.MATCH_CASE_FILTER
 import com.sosauce.chocola.core.data.datastore.PreferencesKeys.MIN_TRACK_DURATION
+import com.sosauce.chocola.core.data.datastore.PreferencesKeys.NEW_FOLDER_POLICY
 import com.sosauce.chocola.core.data.datastore.PreferencesKeys.PAUSE_ON_MUTE
 import com.sosauce.chocola.core.data.datastore.PreferencesKeys.PLAYLIST_SORT
 import com.sosauce.chocola.core.data.datastore.PreferencesKeys.REGEX_FILTER
@@ -36,6 +39,7 @@ import com.sosauce.chocola.core.data.datastore.PreferencesKeys.SORT_TRACKS_ASCEN
 import com.sosauce.chocola.core.data.datastore.PreferencesKeys.TRACK_SORT
 import com.sosauce.chocola.core.data.datastore.PreferencesKeys.WHITELISTED_FOLDERS
 import com.sosauce.chocola.core.data.mapper.toJsonMap
+import com.sosauce.chocola.core.designsystem.NewFolderPolicy
 import com.sosauce.chocola.core.domain.player.MusicState
 import com.sosauce.chocola.core.domain.model.AlbumSort
 import com.sosauce.chocola.core.domain.model.ArtistSort
@@ -69,6 +73,7 @@ import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.long
 import kotlinx.serialization.json.longOrNull
 import org.json.JSONObject
+import kotlin.collections.emptySet
 import kotlin.collections.forEach
 
 class UserPreferences(
@@ -133,6 +138,9 @@ class UserPreferences(
     fun getWhitelistedFolders() = context.dataStore.data.map {
         it[WHITELISTED_FOLDERS] ?: emptySet()
     }
+    fun getBlacklistedFolders() = context.dataStore.data.map {
+        it[BLACKLISTED_FOLDERS] ?: emptySet()
+    }
 
     fun getSafTracks() = context.dataStore.data.map {
         it[SAF_TRACKS] ?: emptySet()
@@ -142,7 +150,7 @@ class UserPreferences(
         val string = it[LAST_MUSIC_STATE] ?: ""
         try {
             Json.decodeFromString<MusicState>(string)
-        } catch (e: IllegalArgumentException) {
+        } catch (_: IllegalArgumentException) {
             MusicState()
         }
     }.first()
@@ -151,12 +159,46 @@ class UserPreferences(
         it[MIN_TRACK_DURATION] ?: 0
     }
 
+    fun getNewFolderPolicy() = context.dataStore.data.map {
+        it[NEW_FOLDER_POLICY] ?: NewFolderPolicy.BLACKLIST
+    }
+
+    fun getAutoAddSubfolders() = context.dataStore.data.map {
+        it[AUTO_ADD_SUBFOLDERS] ?: false
+    }
+
     suspend fun saveSavedMusicState(musicState: MusicState) =
         context.dataStore.edit {
             it[LAST_MUSIC_STATE] = Json.encodeToString(musicState)
         }
 
 
+    suspend fun saveWhitelistedFolders(whitelist: Set<String>) =
+        context.dataStore.edit {
+            it[WHITELISTED_FOLDERS] = whitelist
+            it[BLACKLISTED_FOLDERS] = (it[BLACKLISTED_FOLDERS] ?: emptySet()) - whitelist
+        }
+
+    suspend fun saveBlacklistedFolders(blacklist: Set<String>) =
+        context.dataStore.edit {
+            it[BLACKLISTED_FOLDERS] = blacklist
+            it[WHITELISTED_FOLDERS] = (it[WHITELISTED_FOLDERS] ?: emptySet()) - blacklist
+        }
+
+    suspend fun saveFoldersList(whitelist: Set<String>, blacklist: Set<String>) =
+        context.dataStore.edit {
+            it[WHITELISTED_FOLDERS] = whitelist
+            it[BLACKLISTED_FOLDERS] = blacklist - whitelist
+        }
+
+    suspend fun hasFolderLists(): Boolean =
+        context.dataStore.data.first().let { WHITELISTED_FOLDERS in it || BLACKLISTED_FOLDERS in it }
+
+    suspend fun seedInitialFoldersIfAbsent(blacklist: Set<String>) =
+        context.dataStore.edit {
+            it[WHITELISTED_FOLDERS] = emptySet()
+            it[BLACKLISTED_FOLDERS] = blacklist
+        }
     suspend fun unhideTrack(mediaId: String) {
         context.dataStore.edit {
             val alreadyHidden = it[HIDDEN_TRACKS] ?: emptySet()
@@ -179,6 +221,26 @@ class UserPreferences(
     suspend fun saveBandGains(gains: List<Float>) {
         context.dataStore.edit {
             it[EQUALIZER_GAINS] = gains.joinToString(",")
+        }
+    }
+
+    /**
+     * Doesn't override, appends the given tracks to the already saved
+     * @param add if true, appends the given tracks, else, removes them
+     */
+    suspend fun saveSafTracks(
+        additionalTracks: Set<String>,
+        add: Boolean
+    ) {
+
+        println("bouta change: $add")
+        context.dataStore.edit {
+            val existing = it[SAF_TRACKS] ?: emptySet()
+            if (add) {
+                it[SAF_TRACKS] = existing + additionalTracks
+            } else {
+                it[SAF_TRACKS] = existing - additionalTracks
+            }
         }
     }
 

@@ -13,6 +13,7 @@ import com.sosauce.chocola.core.data.library.SafManager
 import com.sosauce.chocola.core.data.widgets.WidgetsHelper
 import com.sosauce.chocola.core.data.audio.EqualizerManager
 import com.sosauce.chocola.core.data.auto.AndroidAutoHelper
+import com.sosauce.chocola.core.data.library.FoldersClassifier
 import com.sosauce.chocola.core.presentation.player.MusicViewModel
 import com.sosauce.chocola.core.presentation.components.dialogs.DeletionViewModel
 import com.sosauce.chocola.core.presentation.components.dialogs.tracksDetails.TracksDetailsDialogViewModel
@@ -27,7 +28,7 @@ import com.sosauce.chocola.feature.playlists.presentation.PlaylistDetailsViewMod
 import com.sosauce.chocola.feature.playlists.presentation.PlaylistViewModel
 import com.sosauce.chocola.feature.quickplay.presentation.QuickPlayViewModel
 import com.sosauce.chocola.feature.settings.presentation.BackupViewModel
-import com.sosauce.chocola.feature.settings.presentation.FoldersViewModel
+import com.sosauce.chocola.feature.setup.presentation.SetupViewModel
 import com.sosauce.chocola.feature.settings.presentation.PlaybackSettingsViewModel
 import com.sosauce.chocola.feature.settings.presentation.SettingsLibraryViewModel
 import com.sosauce.chocola.feature.transformer.presentation.TransformerViewModel
@@ -64,6 +65,7 @@ val appModule = module {
     singleOf(::WidgetsHelper)
     singleOf(::IDRepositories)
     singleOf(::PlaylistCleanup)
+    singleOf(::FoldersClassifier)
 
 
 
@@ -77,12 +79,12 @@ val appModule = module {
     viewModelOf(::AlbumsViewModel)
     viewModelOf(::AlbumDetailsViewModel)
     viewModelOf(::MainViewModel)
-    viewModelOf(::FoldersViewModel)
     viewModelOf(::PlaybackSettingsViewModel)
     viewModelOf(::TransformerViewModel)
     viewModelOf(::DeletionViewModel)
     viewModelOf(::LyricsEditorViewModel)
     viewModelOf(::SettingsLibraryViewModel)
+    viewModelOf(::SetupViewModel)
     viewModelOf(::TracksDetailsDialogViewModel)
     viewModelOf(::BackupViewModel)
 }

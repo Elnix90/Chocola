@@ -10,6 +10,7 @@ import com.sosauce.chocola.core.data.datastore.PreferencesKeys.LAST_MUSIC_STATE
 import com.sosauce.chocola.core.data.datastore.PreferencesKeys.SAF_TRACKS
 import com.sosauce.chocola.core.data.datastore.PreferencesKeys.WHITELISTED_FOLDERS
 import com.sosauce.chocola.core.domain.model.CuteTrack
+import com.sosauce.chocola.core.domain.model.Folder
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
@@ -63,4 +64,13 @@ fun Preferences.toJsonMap(): Map<String, SettingsWithType> {
             key.name to entry
         }
         .toMap()
+}
+
+fun Set<String>.toFolders(): List<Folder> {
+    return map {
+        Folder(
+            name = it.substringAfterLast('/'),
+            path = it
+        )
+    }
 }

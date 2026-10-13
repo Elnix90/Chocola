@@ -4,24 +4,34 @@ package com.sosauce.chocola.core.data.library
 
 import android.content.ContentUris
 import android.content.Context
+import android.database.Cursor
 import android.provider.MediaStore
+import androidx.compose.ui.util.fastFilter
+import androidx.compose.ui.util.fastForEach
 import androidx.core.net.toUri
 import com.sosauce.chocola.core.domain.model.TracksSettings
 import com.sosauce.chocola.core.data.datastore.UserPreferences
 import com.sosauce.chocola.core.domain.model.CuteTrack
 import com.sosauce.chocola.core.domain.model.TrackSort
-import com.sosauce.chocola.core.domain.util.combine
 import com.sosauce.chocola.core.data.content.observe
 import com.sosauce.chocola.core.domain.library.orderAlbumTrackNumber
+import com.sosauce.chocola.core.domain.util.combine
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
+import kotlin.collections.chunked
+import kotlin.collections.joinToString
+import kotlin.collections.plus
+import kotlin.collections.toTypedArray
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
@@ -34,57 +44,79 @@ class AbstractTracksScanner(
     private val safManager: SafManager
 ) {
 
-    private val defaultTracks = fetchLatestTracks(false).stateIn(
+    // Single scan pipeline shared by every consumer: all whitelisted tracks, hidden ones included.
+    private val whitelistedTracks = fetchWhitelistedTracks().stateIn(
         ioCoroutineScope,
         SharingStarted.WhileSubscribed(5000),
         emptyList()
     )
 
-    private val tracksIncludingHidden by lazy {
-        fetchLatestTracks(true).stateIn(
-            ioCoroutineScope,
-            SharingStarted.WhileSubscribed(5000),
-            emptyList()
-        )
-    }
+    private val defaultTracks = combine(
+        whitelistedTracks,
+        userPreferences.getHiddenTracks()
+    ) { tracks, hidden ->
+        tracks.fastFilter { !hidden.contains(it.mediaId) }
+    }.flowOn(Dispatchers.IO).stateIn(
+        ioCoroutineScope,
+        SharingStarted.WhileSubscribed(5000),
+        emptyList()
+    )
 
-    fun latestTracks(hiddenTracks: Boolean = false) =
-        if (hiddenTracks) tracksIncludingHidden else defaultTracks
+    fun latestTracks() = defaultTracks
 
-    private fun fetchLatestTracks(hiddenTracks: Boolean): Flow<List<CuteTrack>> {
+    private fun fetchWhitelistedTracks(): Flow<List<CuteTrack>> {
         val mediaStoreFlow =
             context.contentResolver.observe(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI)
         val minTrackDurationFlow = userPreferences.getMinTrackDuration()
-        val hiddenTracksFlow = userPreferences.getHiddenTracks()
         val whitelistedFoldersFlow = userPreferences.getWhitelistedFolders()
-        val tracksSettingsFlow = userPreferences.tracksSettings()
-            .debounce(250.milliseconds) // Debounce settings if user changes them quickly (prolly unnecessary)
+        val tracksSettingsFlow = userPreferences.tracksSettings().debounce(250.milliseconds) // Debounce settings if user changes them quickly (prolly unnecessary)
 
         return combine(
             mediaStoreFlow,
             minTrackDurationFlow,
-            hiddenTracksFlow,
             whitelistedFoldersFlow,
             tracksSettingsFlow,
             safManager.fetchLatestSafTracks()
-        ) { _, minTrackDuration, hidden, whitelistedFolders, tracksSettings, saf ->
+        ) { _, minTrackDuration, whitelistedFolders, tracksSettings, saf ->
 
             val rawTracks = fetchTracks(
                 tracksSettings = tracksSettings,
                 minTrackDuration = minTrackDuration
             )
 
-            val filtered = (rawTracks + saf).filter { track ->
-                val isNotHidden = !hidden.contains(track.mediaId)
-                val isWhitelisted = whitelistedFolders.contains(track.folder)
-
-                if (hiddenTracks) {
-                    isWhitelisted
-                } else {
-                    isNotHidden && isWhitelisted
-                }
-            }
+            val filtered = rawTracks.fastFilter { track ->
+                whitelistedFolders.contains(track.folder)
+            } + saf
             if (tracksSettings.sort == TrackSort.ALBUM) filtered.orderAlbumTrackNumber() else filtered
+        }.flowOn(Dispatchers.IO)
+    }
+
+    /**
+     * Fetches all hidden tracks, regardless of user settings, if a track is hidden, fetch it no questions asked
+     */
+    fun fetchHiddenTracks(): Flow<List<CuteTrack>> {
+        return userPreferences.getHiddenTracks().mapLatest { hiddenIds ->
+            val musics = mutableListOf<CuteTrack>()
+
+            // SQLite caps bound variables (~999)
+            hiddenIds.chunked(MAX_SQL_VARIABLES).fastForEach { chunk ->
+                val placeholders = chunk.joinToString(",") { "?" }
+                val selection =
+                    "${MediaStore.Audio.Media._ID} IN ($placeholders) AND " + "${MediaStore.Audio.Media.IS_MUSIC} != ?"
+
+
+                context.contentResolver.query(
+                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                    TRACKS_PROJECTION,
+                    selection,
+                    chunk.toTypedArray() + arrayOf("0"),
+                    "${MediaStore.Audio.Media.TITLE} ASC"
+                )?.use { cursor ->
+                    cursor.readCuteTracks(musics)
+                }
+
+            }
+            musics
         }.flowOn(Dispatchers.IO)
     }
 
@@ -104,65 +136,59 @@ class AbstractTracksScanner(
             add("0")
         }.toTypedArray()
 
-        val projection = arrayOf(
-            MediaStore.Audio.Media._ID,
-            MediaStore.Audio.Media.TITLE,
-            MediaStore.Audio.Media.ARTIST,
-            MediaStore.Audio.Media.ALBUM,
-            MediaStore.Audio.Media.DATA,
-            MediaStore.Audio.Media.TRACK
-        )
-
-
         context.contentResolver.query(
             MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-            projection,
+            TRACKS_PROJECTION,
             selection,
             selectionArgs,
             tracksSettingsToMediaStore(tracksSettings)
         )?.use { cursor ->
-            val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID)
-            val titleColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE)
-            val artistColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST)
-            val albumColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM)
-            val folderColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA)
-            val trackNbColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TRACK)
-
-            while (cursor.moveToNext()) {
-
-
-                val id = cursor.getLong(idColumn)
-                val title = cursor.getString(titleColumn)
-                val artist = cursor.getString(artistColumn)
-                val album = cursor.getString(albumColumn)
-                val filePath = cursor.getString(folderColumn)
-                val folder = filePath.substringBeforeLast('/')
-                val trackNumber = cursor.getInt(trackNbColumn)
-                val uri = ContentUris.withAppendedId(
-                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                    id
-                ).toString()
-
-                val mediaId = id.toString()
-
-                musics.add(
-                    CuteTrack(
-                        mediaId = mediaId,
-                        uriString = uri,
-                        artUriString = "$uri/albumart",
-                        title = title,
-                        artist = artist,
-                        album = album,
-                        trackNumber = trackNumber,
-                        folder = folder,
-                        path = filePath,
-                        isSaf = false
-                    )
-                )
-            }
-
+            cursor.readCuteTracks(musics)
         }
         return musics
+    }
+
+
+    private fun Cursor.readCuteTracks(into: MutableList<CuteTrack>) {
+        val idColumn = getColumnIndexOrThrow(MediaStore.Audio.Media._ID)
+        val titleColumn = getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE)
+        val artistColumn = getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST)
+        val albumColumn = getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM)
+        val folderColumn = getColumnIndexOrThrow(MediaStore.Audio.Media.DATA)
+        val trackNbColumn = getColumnIndexOrThrow(MediaStore.Audio.Media.TRACK)
+
+        while (moveToNext()) {
+
+
+            val id = getLong(idColumn)
+            val title = getString(titleColumn)
+            val artist = getString(artistColumn)
+            val album = getString(albumColumn)
+            val filePath = getString(folderColumn)
+            val folder = filePath.substringBeforeLast('/')
+            val trackNumber = getInt(trackNbColumn)
+            val uri = ContentUris.withAppendedId(
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                id
+            ).toString()
+
+            val mediaId = id.toString()
+
+            into.add(
+                CuteTrack(
+                    mediaId = mediaId,
+                    uriString = uri,
+                    artUriString = "$uri/albumart",
+                    title = title,
+                    artist = artist,
+                    album = album,
+                    trackNumber = trackNumber,
+                    folder = folder,
+                    path = filePath,
+                    isSaf = false
+                )
+            )
+        }
     }
 
     private fun tracksSettingsToMediaStore(tracksSettings: TracksSettings): String? {
@@ -200,6 +226,17 @@ class AbstractTracksScanner(
         private const val SCAN_VOLUME = "scan_volume"
         private val SCAN_CONTENT_URI = "content://media".toUri()
         private const val SCAN_STORAGE = "external_primary"
+
+        private const val MAX_SQL_VARIABLES = 900
+
+        private val TRACKS_PROJECTION = arrayOf(
+            MediaStore.Audio.Media._ID,
+            MediaStore.Audio.Media.TITLE,
+            MediaStore.Audio.Media.ARTIST,
+            MediaStore.Audio.Media.ALBUM,
+            MediaStore.Audio.Media.DATA,
+            MediaStore.Audio.Media.TRACK
+        )
     }
 
 }

@@ -4,7 +4,7 @@ package com.sosauce.chocola.feature.library.presentation.main
 
 import android.app.Application
 import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -47,7 +47,7 @@ class MainViewModel(
     )
 }
 
-@Immutable
+@Stable
 data class MainState(
     val isLoading: Boolean = true,
     val tracks: List<CuteTrack> = emptyList()

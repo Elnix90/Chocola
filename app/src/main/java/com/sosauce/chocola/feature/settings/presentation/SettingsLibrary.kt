@@ -6,18 +6,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -35,47 +29,36 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastMap
 import com.sosauce.chocola.R
-import com.sosauce.chocola.core.presentation.preferences.rememberAllSafTracks
 import com.sosauce.chocola.core.presentation.preferences.rememberMinTrackDuration
-import com.sosauce.chocola.core.presentation.preferences.rememberWhitelistedFolders
-import com.sosauce.chocola.core.domain.model.CuteTrack
-import com.sosauce.chocola.core.domain.model.Folder
-import com.sosauce.chocola.core.domain.player.MusicState
 import com.sosauce.chocola.core.domain.player.PlaySource
 import com.sosauce.chocola.core.domain.player.PlayerActions
 import com.sosauce.chocola.core.designsystem.components.CuteListItem
-import com.sosauce.chocola.core.presentation.components.DefaultMusicListItemTrailingContent
 import com.sosauce.chocola.core.presentation.components.MusicListItem
-import com.sosauce.chocola.core.presentation.navigation.Screen
 import com.sosauce.chocola.feature.settings.presentation.components.ClickableSettingsCard
 import com.sosauce.chocola.feature.settings.presentation.components.SettingsWithTitle
 import com.sosauce.chocola.feature.settings.presentation.components.SliderSettingsCards
 import com.sosauce.chocola.feature.settings.presentation.components.foldersView
 import com.sosauce.chocola.core.domain.util.copyMutate
-import com.sosauce.chocola.core.presentation.util.selfAlignHorizontally
-import kotlin.collections.listOf
 
 @Composable
 fun SettingsLibrary(
-    safTracksUi: List<CuteTrack>,
-    hiddenTracks: List<CuteTrack>,
-    folders: List<Folder>,
-    musicState: MusicState,
+    state: LibraryState,
     contentPaddingValues: PaddingValues,
     onHandlePlayerActions: (PlayerActions) -> Unit,
-    onNavigate: (Screen) -> Unit,
     onHandleLibraryActions: (LibraryActions) -> Unit
 ) {
 
     val context = LocalContext.current
-    var safTracks by rememberAllSafTracks()
     var minTrackDuration by rememberMinTrackDuration()
-    var whitelistedFolders by rememberWhitelistedFolders()
-    val (whitelisted, blacklisted) = folders.partition { it.path in whitelistedFolders }
 
     val safAudioPicker =
         rememberLauncherForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris ->
-            safTracks = safTracks.copyMutate { addAll(uris.fastMap { it.toString() }) }
+            onHandleLibraryActions(
+                LibraryActions.ChangeSafTracks(
+                    tracks = uris.fastMap { it.toString() },
+                    add = true
+                )
+            )
 
             uris.fastForEach { uri ->
                 context.contentResolver.takePersistableUriPermission(
@@ -113,21 +96,17 @@ fun SettingsLibrary(
             }
         }
         foldersView(
-            whitelisted = whitelisted,
-            blacklisted = blacklisted,
-            onBatchEdit = { newList ->
-                whitelistedFolders = whitelistedFolders.copyMutate {
-                    if (!addAll(newList)) {
-                        removeAll(newList)
-                    }
-                }
+            whitelisted = state.whitelistedFolders,
+            blacklisted = state.blacklistedFolders,
+            onBlacklist = { newList ->
+                onHandleLibraryActions(
+                    LibraryActions.BlacklistFolders(newList)
+                )
             },
-            onSingleEdit = { path ->
-                whitelistedFolders = whitelistedFolders.copyMutate {
-                    if (!add(path)) {
-                        remove(path)
-                    }
-                }
+            onWhitelist = { newList ->
+                onHandleLibraryActions(
+                    LibraryActions.WhitelistFolders(newList)
+                )
             }
         )
 
@@ -135,7 +114,7 @@ fun SettingsLibrary(
             SettingsWithTitle(
                 title = R.string.hidden_tracks
             ) {
-                if (hiddenTracks.isEmpty()) {
+                if (state.hiddenTracks.isEmpty()) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier
@@ -163,21 +142,20 @@ fun SettingsLibrary(
             }
         }
         itemsIndexed(
-            items = hiddenTracks,
+            items = state.hiddenTracks,
             key = { _, track -> track.mediaId }
         ) { index, track ->
-            val isActive = musicState.track == track
             MusicListItem(
                 modifier = Modifier.padding(horizontal = 11.dp),
                 track = track,
-                isActive = isActive,
+                isActive = false,
                 onShortClick = {},
                 backgroundColor = MaterialTheme.colorScheme.surfaceContainer,
                 shape = RoundedCornerShape(
                     topStart = if (index == 0) 24.dp else 2.dp,
                     topEnd = if (index == 0) 24.dp else 2.dp,
-                    bottomStart = if (index == hiddenTracks.lastIndex) 24.dp else 2.dp,
-                    bottomEnd = if (index == hiddenTracks.lastIndex) 24.dp else 2.dp,
+                    bottomStart = if (index == state.hiddenTracks.lastIndex) 24.dp else 2.dp,
+                    bottomEnd = if (index == state.hiddenTracks.lastIndex) 24.dp else 2.dp,
                 ),
                 trailingContent = {
                     IconButton(
@@ -230,7 +208,7 @@ fun SettingsLibrary(
             }
         }
 
-        if (safTracksUi.isEmpty()) {
+        if (state.safTracks.isEmpty()) {
             item {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -264,10 +242,9 @@ fun SettingsLibrary(
         }
 
         itemsIndexed(
-            items = safTracksUi,
+            items = state.safTracks,
             key = { _, track -> track.mediaId }
         ) { index, track ->
-            val isActive = musicState.track == track
             MusicListItem(
                 modifier = Modifier
                     .animateItem()
@@ -277,22 +254,27 @@ fun SettingsLibrary(
                 shape = RoundedCornerShape(
                     topStart = 2.dp,
                     topEnd = 2.dp,
-                    bottomStart = if (index == safTracksUi.lastIndex) 24.dp else 2.dp,
-                    bottomEnd = if (index == safTracksUi.lastIndex) 24.dp else 2.dp
+                    bottomStart = if (index == state.safTracks.lastIndex) 24.dp else 2.dp,
+                    bottomEnd = if (index == state.safTracks.lastIndex) 24.dp else 2.dp
                 ),
-                isActive = isActive,
+                isActive = false,
                 onShortClick = {
                     onHandlePlayerActions(
                         PlayerActions.PlayFromSource(
                             mediaId = track.mediaId,
-                            source = PlaySource.ExplicitTracks(safTracksUi)
+                            source = PlaySource.ExplicitTracks(state.safTracks)
                         )
                     )
                 },
                 trailingContent = {
                     IconButton(
                         onClick = {
-                            safTracks = safTracks.copyMutate { remove(track.uri.toString()) }
+                            onHandleLibraryActions(
+                                LibraryActions.ChangeSafTracks(
+                                    tracks = listOf(track.uri.toString()),
+                                    add = false
+                                )
+                            )
                         },
                         shapes = IconButtonDefaults.shapes()
                     ) {

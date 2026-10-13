@@ -4,16 +4,21 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.sosauce.chocola.core.data.local.PlaylistCleanup
 import com.sosauce.chocola.core.presentation.player.MusicViewModel
 import com.sosauce.chocola.app.navigation.Nav
 import com.sosauce.chocola.core.data.datastore.dataStore
+import com.sosauce.chocola.core.data.library.FoldersClassifier
 import com.sosauce.chocola.feature.setup.presentation.SetupScreen
 import com.sosauce.chocola.core.designsystem.theme.ChocolaTheme
 import com.sosauce.chocola.core.presentation.util.hasMusicPermission
@@ -27,15 +32,12 @@ import org.koin.androidx.compose.koinViewModel
 class MainActivity : ComponentActivity() {
 
     private val playlistCleanup by inject<PlaylistCleanup>()
+    private val foldersClassifier by inject<FoldersClassifier>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen()
         enableEdgeToEdge()
-
-        lifecycleScope.launch {
-            playlistCleanup.startCleanup()
-        }
 
 
         setContent {
@@ -47,6 +49,17 @@ class MainActivity : ComponentActivity() {
 
                 var canProceedToApp by remember { mutableStateOf(hasMusicPermission()) }
                 if (canProceedToApp) {
+
+                    val lifecycleOwner = LocalLifecycleOwner.current
+
+                    // don't run cleanup jobs in setup
+                    LaunchedEffect(Unit) {
+                        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                            launch { playlistCleanup.startCleanup() }
+                            launch { foldersClassifier.start() }
+                        }
+                    }
+
                     Nav(
                         musicViewModel = musicViewModel
                     )

@@ -34,7 +34,7 @@ fun FolderItem(
 ) {
     Card(
         modifier = modifier
-            .padding(horizontal = 16.dp, vertical = 2.dp),
+            .padding(horizontal = 16.dp, vertical = 1.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainer
         ),

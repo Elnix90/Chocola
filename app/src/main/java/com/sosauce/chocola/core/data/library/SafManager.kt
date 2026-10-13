@@ -28,8 +28,6 @@ class SafManager(
             }
         }
         .flowOn(Dispatchers.IO)
-
-
     private fun uriToTrack(
         uri: Uri
     ): CuteTrack? {

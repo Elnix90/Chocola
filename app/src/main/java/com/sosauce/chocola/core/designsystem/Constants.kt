@@ -114,6 +114,11 @@ object LyricsAlignment {
     const val END = "End"
 }
 
+object NewFolderPolicy {
+    const val BLACKLIST = "BLACKLIST"
+    const val WHITELIST = "WHITELIST"
+}
+
 object ThumbStyle {
     const val STRAIGHT = "Straight"
     const val BALL = "Ball"

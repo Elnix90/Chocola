@@ -1,6 +1,5 @@
 package com.sosauce.chocola.feature.metadata.presentation
 
-import androidx.compose.runtime.Stable
 import com.kyant.taglib.PropertyMap
 
 fun PropertyMap.toModifiableMap(separator: String = ", "): MutableMap<String, String?> {
@@ -21,7 +20,6 @@ fun String?.formatForField(separator: String = ","): Array<String> {
     return this?.split(separator)?.map { it.trim() }?.toTypedArray() ?: arrayOf(this ?: "")
 }
 
-@Stable
 data class AudioFileMetadata(
     val title: String?,
     val artist: String?,

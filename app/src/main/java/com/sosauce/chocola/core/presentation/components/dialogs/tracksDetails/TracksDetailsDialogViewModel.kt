@@ -5,6 +5,7 @@ import android.provider.MediaStore
 import android.text.format.DateUtils
 import android.text.format.Formatter
 import android.webkit.MimeTypeMap
+import androidx.compose.runtime.Stable
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.kyant.taglib.TagLib
@@ -186,6 +187,7 @@ class TracksDetailsDialogViewModel(
     }
 }
 
+@Stable
 data class TracksDetailsState(
     val isLoading: Boolean = true,
     val trackInfo: List<TrackDetails> = emptyList(),

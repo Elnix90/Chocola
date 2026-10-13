@@ -11,6 +11,7 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -27,7 +28,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.retain.RetainedEffect
@@ -308,10 +309,12 @@ fun SettingsScreen(
                         ) {
                             Column(
                                 modifier = Modifier.padding(horizontal = 10.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(5.dp)
                             ) {
                                 Text(
-                                    text = stringResource(R.string.importing_in_progress)
+                                    text = stringResource(R.string.importing_in_progress),
+                                    style = MaterialTheme.typography.bodyLargeEmphasized
                                 )
                                 LinearWavyProgressIndicator()
 
@@ -333,9 +336,7 @@ fun SettingsScreen(
 
                 entry<SettingsScreen.Library> {
                     val viewModel = koinViewModel<SettingsLibraryViewModel>()
-                    val safTracks by viewModel.safTracks.collectAsStateWithLifecycle()
-                    val hiddenTracks by viewModel.hiddenTracks.collectAsStateWithLifecycle()
-                    val folders by viewModel.folders.collectAsStateWithLifecycle()
+                    val state by viewModel.state.collectAsStateWithLifecycle()
 
                     ObserveAsEvents(viewModel.events) {
                         when (it) {
@@ -358,11 +359,7 @@ fun SettingsScreen(
                     }
 
                     SettingsLibrary(
-                        safTracksUi = safTracks,
-                        hiddenTracks = hiddenTracks,
-                        folders = folders,
-                        musicState = musicState,
-                        onNavigate = onNavigate,
+                        state = state,
                         onHandlePlayerActions = onHandlePlayerActions,
                         onHandleLibraryActions = viewModel::handleLibraryAction,
                         contentPaddingValues = paddingValues
@@ -375,7 +372,7 @@ fun SettingsScreen(
 
 }
 
-@Immutable
+@Stable
 private data class Item(
     val id: String = Uuid.random().toString(),
     val name: String,

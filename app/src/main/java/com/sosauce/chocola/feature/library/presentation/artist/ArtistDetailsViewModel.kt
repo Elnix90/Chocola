@@ -3,6 +3,7 @@
 package com.sosauce.chocola.feature.library.presentation.artist
 
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.util.fastFilter
 import androidx.lifecycle.ViewModel
@@ -70,6 +71,7 @@ class ArtistDetailsViewModel(
 
 }
 
+@Stable
 data class ArtistDetailsState(
     val isLoading: Boolean = true,
     val artist: Artist = Artist(),

@@ -1,6 +1,7 @@
 package com.sosauce.chocola.feature.settings.presentation
 
 import androidx.collection.FloatList
+import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sosauce.chocola.core.data.datastore.UserPreferences
@@ -57,6 +58,7 @@ class PlaybackSettingsViewModel(
 
 }
 
+@Stable
 data class PlaybackSettingsState(
     val eqBands: List<EqualizerBand> = emptyList(),
     val eqPresets: List<EqualizerPreset> = emptyList()

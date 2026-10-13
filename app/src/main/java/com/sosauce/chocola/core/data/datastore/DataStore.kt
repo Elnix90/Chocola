@@ -29,6 +29,7 @@ data object PreferencesKeys {
     val THEME = stringPreferencesKey("theme")
     val USE_SYSTEM_FONT = booleanPreferencesKey("use_sys_font")
     val WHITELISTED_FOLDERS = stringSetPreferencesKey("WHITELISTED_FOLDERS")
+    val BLACKLISTED_FOLDERS = stringSetPreferencesKey("BLACKLISTED_FOLDERS")
     val HAS_SEEN_TIP = booleanPreferencesKey("has_seen_tip")
     val SNAP_SPEED_N_PITCH = booleanPreferencesKey("snap_peed_n_pitch")
     val USE_ART_THEME = booleanPreferencesKey("use_art_theme")
@@ -80,6 +81,8 @@ data object PreferencesKeys {
     val KEEP_ALIVE = booleanPreferencesKey("KEEP_ALIVE")
     val AOD_ENABLE_GESTURES = booleanPreferencesKey("AOD_ENABLE_GESTURES")
     val AOD_SHOW_CONTROLS = booleanPreferencesKey("AOD_SHOW_CONTROLS")
+    val AUTO_ADD_SUBFOLDERS = booleanPreferencesKey("AUTO_ADD_SUBFOLDERS")
+    val NEW_FOLDER_POLICY = stringPreferencesKey("NEW_FOLDER_POLICY")
 
 }
 
