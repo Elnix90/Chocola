@@ -269,6 +269,7 @@
     <string name="export_settings_desc">Export app settings to a JSON file.</string>
     <string name="importing_in_progress">Importing, this shouldn\'t take too long…</string>
     <string name="scanning_folders_notice">Scanning deep and hard for music folders…</string>
+    <string name="cancel_timer">Cancel timer</string>
 
 
     <plurals name="tracks_plural">

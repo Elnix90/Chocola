@@ -57,6 +57,10 @@ class MainActivity : ComponentActivity() {
                         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                             launch { playlistCleanup.startCleanup() }
                             launch { foldersClassifier.start() }
+                            launch {
+                                // recheck has permissions when app comes back to foreground
+                                canProceedToApp = hasMusicPermission()
+                            }
                         }
                     }
 

@@ -69,7 +69,7 @@ fun CuteTimePicker(
                         onClick = onCancelTimer,
                         shapes = ButtonDefaults.shapes()
                     ) {
-                        Text("Cancel timer")
+                        Text(stringResource(R.string.cancel_timer))
                     }
                 }
             } else {

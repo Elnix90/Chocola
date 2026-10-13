@@ -96,7 +96,7 @@ fun DeletionDialog(
         }
     }
 
-    LaunchedEffect(true) {
+    LaunchedEffect(Unit) {
         deletionViewModel.legacyAskPermission.collectLatest {
             it?.let {
                 val request = IntentSenderRequest.Builder(it.intentSender).build()

@@ -346,7 +346,8 @@ fun EditPlaylist(
                             }
                         }
                         items(
-                            items = newPlaylist.tags.toList()
+                            items = newPlaylist.tags.toList(),
+                            key = { it }
                         ) { tag ->
                             val interactionSource = rememberInteractionSource()
                             val isPressed by interactionSource.collectIsPressedAsState()

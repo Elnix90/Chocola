@@ -168,7 +168,7 @@ fun SharedTransitionScope.MainScreen(
                             )
                         }
                     categories.fastForEach { category ->
-                        item {
+                        item(category.path) {
                             FolderHeader(
                                 modifier = Modifier.animateItem(),
                                 category = category,

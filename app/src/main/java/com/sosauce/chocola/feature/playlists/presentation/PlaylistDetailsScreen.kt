@@ -164,9 +164,7 @@ fun SharedTransitionScope.PlaylistDetailsScreen(
                         key = { it.mediaId }
                     ) { track ->
 
-                        val isSelected by remember {
-                            derivedStateOf { multiSelectState.isSelected(track) }
-                        }
+                        val isSelected by multiSelectState.isSelectedAsState(track)
 
                         MusicListItem(
                             modifier = Modifier
