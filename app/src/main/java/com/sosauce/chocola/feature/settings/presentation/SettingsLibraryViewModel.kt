@@ -70,13 +70,13 @@ class SettingsLibraryViewModel(
             }
             is LibraryActions.BlacklistFolders -> {
                 viewModelScope.launch {
-                    userPreferences.saveBlacklistedFolders(action.paths.toSet())
+                    userPreferences.addBlacklistedFolders(action.paths.toSet())
                 }
             }
 
             is LibraryActions.WhitelistFolders -> {
                 viewModelScope.launch {
-                    userPreferences.saveWhitelistedFolders(action.paths.toSet())
+                    userPreferences.addWhitelistedFolders(action.paths.toSet())
                 }
             }
 

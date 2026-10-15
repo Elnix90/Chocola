@@ -27,8 +27,8 @@ android {
         applicationId = "com.sosauce.cutemusic"
         minSdk = 28
         targetSdk = 37
-        versionCode = 50013
-        versionName = "4.4.5"
+        versionCode = 50014
+        versionName = "4.4.6"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true

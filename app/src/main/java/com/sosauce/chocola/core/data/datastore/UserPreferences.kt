@@ -22,7 +22,6 @@ import com.sosauce.chocola.core.data.datastore.PreferencesKeys.AUTO_ADD_SUBFOLDE
 import com.sosauce.chocola.core.data.datastore.PreferencesKeys.BLACKLISTED_FOLDERS
 import com.sosauce.chocola.core.data.datastore.PreferencesKeys.EQUALIZER_ENABLED
 import com.sosauce.chocola.core.data.datastore.PreferencesKeys.EQUALIZER_GAINS
-import com.sosauce.chocola.core.data.datastore.PreferencesKeys.HIDDEN_FOLDERS
 import com.sosauce.chocola.core.data.datastore.PreferencesKeys.HIDDEN_TRACKS
 import com.sosauce.chocola.core.data.datastore.PreferencesKeys.LAST_MUSIC_STATE
 import com.sosauce.chocola.core.data.datastore.PreferencesKeys.MATCH_CASE_FILTER
@@ -55,24 +54,14 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.boolean
-import kotlinx.serialization.json.booleanOrNull
 import kotlinx.serialization.json.decodeFromStream
 import kotlinx.serialization.json.double
-import kotlinx.serialization.json.doubleOrNull
 import kotlinx.serialization.json.float
-import kotlinx.serialization.json.floatOrNull
 import kotlinx.serialization.json.int
-import kotlinx.serialization.json.intOrNull
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.long
-import kotlinx.serialization.json.longOrNull
-import org.json.JSONObject
 import kotlin.collections.emptySet
 import kotlin.collections.forEach
 
@@ -173,15 +162,15 @@ class UserPreferences(
         }
 
 
-    suspend fun saveWhitelistedFolders(whitelist: Set<String>) =
+    suspend fun addWhitelistedFolders(whitelist: Set<String>) =
         context.dataStore.edit {
-            it[WHITELISTED_FOLDERS] = whitelist
+            it[WHITELISTED_FOLDERS] = (it[WHITELISTED_FOLDERS] ?: emptySet()) + whitelist
             it[BLACKLISTED_FOLDERS] = (it[BLACKLISTED_FOLDERS] ?: emptySet()) - whitelist
         }
 
-    suspend fun saveBlacklistedFolders(blacklist: Set<String>) =
+    suspend fun addBlacklistedFolders(blacklist: Set<String>) =
         context.dataStore.edit {
-            it[BLACKLISTED_FOLDERS] = blacklist
+            it[BLACKLISTED_FOLDERS] = (it[BLACKLISTED_FOLDERS] ?: emptySet()) + blacklist
             it[WHITELISTED_FOLDERS] = (it[WHITELISTED_FOLDERS] ?: emptySet()) - blacklist
         }
 
