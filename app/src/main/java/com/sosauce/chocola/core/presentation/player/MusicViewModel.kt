@@ -470,7 +470,7 @@ class MusicViewModel(
 
                 if (sameQueue) {
                     // if same queue, use player's index
-                    val playerIndex = _musicState.value.loadedMedias.indexOfFirst { it.mediaId == action.mediaId }
+                    val playerIndex = targetTracks.indexOfFirst { it.mediaId == action.mediaId }
                     mediaController!!.seekTo(playerIndex, 0)
                     mediaController!!.play()
                 } else {
