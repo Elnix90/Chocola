@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastMap
 import com.sosauce.chocola.R
+import com.sosauce.chocola.core.designsystem.NewFolderPolicy
 import com.sosauce.chocola.core.presentation.preferences.rememberMinTrackDuration
 import com.sosauce.chocola.core.domain.player.PlaySource
 import com.sosauce.chocola.core.domain.player.PlayerActions
@@ -39,6 +40,11 @@ import com.sosauce.chocola.feature.settings.presentation.components.SettingsWith
 import com.sosauce.chocola.feature.settings.presentation.components.SliderSettingsCards
 import com.sosauce.chocola.feature.settings.presentation.components.foldersView
 import com.sosauce.chocola.core.domain.util.copyMutate
+import com.sosauce.chocola.core.presentation.preferences.rememberAutoAddSubfolders
+import com.sosauce.chocola.core.presentation.preferences.rememberNewFolderPolicy
+import com.sosauce.chocola.feature.settings.presentation.components.SettingOption
+import com.sosauce.chocola.feature.settings.presentation.components.SettingsMultipleChoice
+import com.sosauce.chocola.feature.settings.presentation.components.SettingsSwitch
 
 @Composable
 fun SettingsLibrary(
@@ -50,6 +56,19 @@ fun SettingsLibrary(
 
     val context = LocalContext.current
     var minTrackDuration by rememberMinTrackDuration()
+    var autoAddSub by rememberAutoAddSubfolders()
+    var newFolderPolicy by rememberNewFolderPolicy()
+
+    val policies = listOf(
+        SettingOption(
+            value = NewFolderPolicy.WHITELIST,
+            labelRes = R.string.whitelist
+        ),
+        SettingOption(
+            value = NewFolderPolicy.BLACKLIST,
+            labelRes = R.string.blacklist
+        ),
+    )
 
     val safAudioPicker =
         rememberLauncherForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris ->
@@ -89,9 +108,25 @@ fun SettingsLibrary(
                 ClickableSettingsCard(
                     onClick = { onHandleLibraryActions(LibraryActions.ForceRescan) },
                     topDp = 2.dp,
-                    bottomDp = 24.dp,
+                    bottomDp = 2.dp,
                     text = stringResource(R.string.rescan_tracks),
                     optionalDescription = R.string.rescan_tracks_desc
+                )
+                SettingsSwitch(
+                    checked = autoAddSub,
+                    onCheckedChange = { autoAddSub = !autoAddSub },
+                    topDp = 2.dp,
+                    bottomDp = 2.dp,
+                    text = stringResource(R.string.auto_whitelist_sub),
+                    optionalDescription = R.string.auto_whitelist_sub_desc
+                )
+                SettingsMultipleChoice(
+                    active = newFolderPolicy,
+                    onSelectValue = { newFolderPolicy = it },
+                    items = policies,
+                    topDp = 2.dp,
+                    bottomDp = 24.dp,
+                    text = R.string.new_folder_policy
                 )
             }
         }

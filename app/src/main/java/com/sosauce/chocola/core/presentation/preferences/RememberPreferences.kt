@@ -11,6 +11,7 @@ import com.sosauce.chocola.core.data.datastore.PreferencesKeys.ARTIST_SORT
 import com.sosauce.chocola.core.data.datastore.PreferencesKeys.ARTWORK_SHAPE
 import com.sosauce.chocola.core.data.datastore.PreferencesKeys.ART_AS_BACKGROUND
 import com.sosauce.chocola.core.data.datastore.PreferencesKeys.ART_LYRICS
+import com.sosauce.chocola.core.data.datastore.PreferencesKeys.AUTO_ADD_SUBFOLDERS
 import com.sosauce.chocola.core.data.datastore.PreferencesKeys.CAROUSEL
 import com.sosauce.chocola.core.data.datastore.PreferencesKeys.CENTER_TITLE
 import com.sosauce.chocola.core.data.datastore.PreferencesKeys.DYNAMIC_DURATION
@@ -48,11 +49,13 @@ import com.sosauce.chocola.core.data.datastore.PreferencesKeys.TRACK_STYLE
 import com.sosauce.chocola.core.data.datastore.PreferencesKeys.USE_ART_THEME
 import com.sosauce.chocola.core.data.datastore.PreferencesKeys.USE_SYSTEM_FONT
 import com.sosauce.chocola.core.data.datastore.PreferencesKeys.WHITELISTED_FOLDERS
+import com.sosauce.chocola.core.data.datastore.PreferencesKeys.NEW_FOLDER_POLICY
 import com.sosauce.chocola.core.data.datastore.dataStore
 import com.sosauce.chocola.core.designsystem.ArtworkShape
 import com.sosauce.chocola.core.designsystem.CutePaletteStyle
 import com.sosauce.chocola.core.designsystem.CuteTheme
 import com.sosauce.chocola.core.designsystem.LyricsAlignment
+import com.sosauce.chocola.core.designsystem.NewFolderPolicy
 import com.sosauce.chocola.core.designsystem.ThumbStyle
 import com.sosauce.chocola.core.designsystem.TrackStyle
 import com.sosauce.chocola.core.presentation.navigation.Screen
@@ -238,6 +241,14 @@ fun rememberAodEnableGestures() =
 @Composable
 fun rememberAodShowControls() =
     rememberPreference(key = AOD_SHOW_CONTROLS, defaultValue = true)
+
+@Composable
+fun rememberAutoAddSubfolders() =
+    rememberPreference(key = AUTO_ADD_SUBFOLDERS, defaultValue = false)
+
+@Composable
+fun rememberNewFolderPolicy() =
+    rememberPreference(key = NEW_FOLDER_POLICY, defaultValue = NewFolderPolicy.BLACKLIST)
 @Composable
 fun rememberInitialScreenBlocking(): Screen {
     val context = LocalContext.current

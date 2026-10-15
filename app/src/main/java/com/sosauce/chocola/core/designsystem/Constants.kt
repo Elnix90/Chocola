@@ -8,10 +8,14 @@ import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.SliderState
 import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.graphics.shapes.CornerRounding
 import androidx.graphics.shapes.RoundedPolygon
 import androidx.graphics.shapes.rectangle
+import com.sosauce.chocola.R
 import com.sosauce.chocola.core.designsystem.components.ClassicThumb
 import com.sosauce.chocola.core.designsystem.components.MorphingThumb
 import com.sosauce.chocola.core.designsystem.components.StraightThumb
@@ -117,6 +121,16 @@ object LyricsAlignment {
 object NewFolderPolicy {
     const val BLACKLIST = "BLACKLIST"
     const val WHITELIST = "WHITELIST"
+
+    @Composable
+    fun toLocalized(policy: String): String {
+        return when (policy) {
+            BLACKLIST -> stringResource(R.string.blacklist)
+            WHITELIST -> stringResource(R.string.whitelist)
+            else -> throw IllegalArgumentException("Not a valid policy")
+        }
+
+    }
 }
 
 object ThumbStyle {

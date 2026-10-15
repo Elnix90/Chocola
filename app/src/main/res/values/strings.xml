@@ -270,6 +270,12 @@
     <string name="importing_in_progress">Importing, this shouldn\'t take too long…</string>
     <string name="scanning_folders_notice">Scanning deep and hard for music folders…</string>
     <string name="cancel_timer">Cancel timer</string>
+    <string name="auto_whitelist_sub">Automatically whitelist subfolders</string>
+    <string name="auto_whitelist_sub_desc">Automatically whitelist subfolders of whitelisted directories</string>
+    <string name="new_folder_policy">New folder policy</string>
+    <string name="blacklist">Blacklist</string>
+    <string name="whitelist">Whitelist</string>
+    <string name="select_new_value">Select a new value</string>
 
 
     <plurals name="tracks_plural">

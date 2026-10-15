@@ -7,6 +7,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -15,14 +16,20 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -31,16 +38,21 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SelectableDropdownMenuItem
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.carousel.HorizontalCenteredHeroCarousel
+import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.rememberSliderState
 import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,12 +62,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.util.fastMap
+import coil3.compose.AsyncImage
 import com.materialkolor.DynamicMaterialExpressiveTheme
 import com.materialkolor.dynamiccolor.ColorSpec
 import com.materialkolor.rememberDynamicMaterialThemeState
@@ -65,9 +82,12 @@ import com.sosauce.chocola.core.domain.model.EqualizerPreset
 import com.sosauce.chocola.core.designsystem.components.WavySlider
 import com.sosauce.chocola.core.designsystem.ArtworkShape
 import com.sosauce.chocola.core.designsystem.CuteTheme
+import com.sosauce.chocola.core.designsystem.components.CuteListItem
 import com.sosauce.chocola.core.presentation.util.rememberFocusRequester
 import com.sosauce.chocola.core.presentation.util.toPaletteStyle
 import com.sosauce.nekobites.components.Spacer
+import sv.lib.squircleshape.CornerSmoothing
+import sv.lib.squircleshape.SquircleShape
 
 @Composable
 fun SettingsCardHeader(
@@ -138,6 +158,107 @@ fun SettingsSwitch(
         }
     }
 }
+
+@Composable
+fun <T> SettingsMultipleChoice(
+    modifier: Modifier = Modifier,
+    active: T,
+    items: List<SettingOption<T>>,
+    topDp: Dp,
+    bottomDp: Dp,
+    onSelectValue: (T) -> Unit,
+    @StringRes text: Int,
+    @StringRes optionalDescription: Int? = null
+) {
+    var showDialog by remember { mutableStateOf(false) }
+
+
+    val activeLabel = items.firstOrNull { it.value == active }
+        ?.let { stringResource(it.labelRes) } ?: ""
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text(stringResource(R.string.select_new_value)) },
+            confirmButton = {
+                TextButton(
+                    onClick = { showDialog = false },
+                    shapes = ButtonDefaults.shapes()
+                ) {
+                    Text(stringResource(R.string.cancel))
+                }
+            },
+            icon = {
+                Icon(
+                    painter = painterResource(R.drawable.match_case),
+                    contentDescription = null
+                )
+            },
+            text = {
+                LazyColumn {
+                    itemsIndexed(items = items) { index, item ->
+                        val isSelected = item.value == active
+
+                        SelectableDropdownMenuItem(
+                            onClick = {
+                                onSelectValue(item.value)
+                                showDialog = false
+                            },
+                            selected = isSelected,
+                            text = { Text(stringResource(item.labelRes)) },
+                            shapes = MenuDefaults.itemShape(index, items.count())
+                        )
+                    }
+                }
+            }
+        )
+    }
+
+    Card(
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainer),
+        modifier = modifier.padding(horizontal = 16.dp, vertical = 1.dp),
+        shape = RoundedCornerShape(
+            topStart = topDp,
+            topEnd = topDp,
+            bottomStart = bottomDp,
+            bottomEnd = bottomDp
+        ),
+        onClick = { showDialog = true }
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.padding(15.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.weight(1f)
+            ) {
+                Column {
+                    Text(stringResource(text))
+                    optionalDescription?.let {
+                        Text(
+                            text = stringResource(it),
+                            style = MaterialTheme.typography.labelSmallEmphasized.copy(
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        )
+                    }
+                }
+            }
+            Spacer(5.dp)
+            TextButton(onClick = { showDialog = true }) {
+                Text(activeLabel)
+            }
+        }
+    }
+}
+
+data class SettingOption<T>(
+    val value: T,
+    @StringRes val labelRes: Int
+)
+
 
 @Composable
 fun ClickableSettingsCard(

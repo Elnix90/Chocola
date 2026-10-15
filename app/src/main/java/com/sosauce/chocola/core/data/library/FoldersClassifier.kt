@@ -31,8 +31,11 @@ class FoldersClassifier(
             val setting = folderSettings.first()
 
             val paths = folders.fastMap { it.path }.sortedBy { it.length } // parents first
-            val newWl = setting.whitelisted.toMutableSet()
-            val newBl = setting.blacklisted.toMutableSet()
+            val existing = paths.toHashSet()
+
+            // delete folders from wl/bl that no longer exist
+            val newWl = setting.whitelisted.filterTo(mutableSetOf()) { it in existing }
+            val newBl = setting.blacklisted.filterTo(mutableSetOf()) { it in existing }
 
 
             paths.fastForEach { path ->
