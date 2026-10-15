@@ -452,7 +452,7 @@ class MusicViewModel(
                     is PlaySource.Album -> currentTracks.fastFilter { it.album == source.name }
                     is PlaySource.Artist -> currentTracks.fastFilter { it.artist == source.name }
                     is PlaySource.ExplicitTracks -> source.tracks
-                }
+                }.orderAlbumTrackNumber()
 
                 if (random) {
                     mediaController!!.setMediaItems(targetTracks.fastMap { it.toMediaItem() })
@@ -469,7 +469,6 @@ class MusicViewModel(
 
 
                 if (sameQueue) {
-                    // if same queue, use player's index
                     val playerIndex = targetTracks.indexOfFirst { it.mediaId == action.mediaId }
                     mediaController!!.seekTo(playerIndex, 0)
                     mediaController!!.play()
@@ -611,7 +610,7 @@ class MusicViewModel(
                     is PlaySource.Album -> currentTracks.fastFilter { it.album == source.name }
                     is PlaySource.Artist -> currentTracks.fastFilter { it.artist == source.name }
                     is PlaySource.ExplicitTracks -> source.tracks
-                }
+                }.orderAlbumTrackNumber()
 
                 mediaController!!.setMediaItems(targetTracks.fastMap { it.toMediaItem() }, 0, 0)
             }
