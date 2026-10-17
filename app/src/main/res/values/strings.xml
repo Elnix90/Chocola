@@ -273,6 +273,10 @@
     <string name="auto_whitelist_sub">Automatically whitelist subfolders</string>
     <string name="auto_whitelist_sub_desc">Automatically whitelist subfolders of whitelisted directories</string>
     <string name="new_folder_policy">New folder policy</string>
+    <string name="whitelist_folder_tree">Whitelist folder and subfolders</string>
+    <string name="whitelist_folder_tree_desc">Pick a folder. It and every folder inside it are whitelisted, including folders added later</string>
+    <string name="no_folder_picker">No folder picker found on this device</string>
+    <string name="folder_tree_unsupported">Only folders on device storage can be picked</string>
     <string name="blacklist">Blacklist</string>
     <string name="whitelist">Whitelist</string>
     <string name="select_new_value">Select a new value</string>
