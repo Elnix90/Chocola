@@ -164,15 +164,21 @@ class UserPreferences(
 
     suspend fun addWhitelistedFolders(whitelist: Set<String>) =
         context.dataStore.edit {
-            it[WHITELISTED_FOLDERS] = (it[WHITELISTED_FOLDERS] ?: emptySet()) + whitelist
-            it[BLACKLISTED_FOLDERS] = (it[BLACKLISTED_FOLDERS] ?: emptySet()) - whitelist
+            val moved = (it[BLACKLISTED_FOLDERS] ?: emptySet()).under(whitelist)
+            it[WHITELISTED_FOLDERS] = (it[WHITELISTED_FOLDERS] ?: emptySet()) + whitelist + moved
+            it[BLACKLISTED_FOLDERS] = (it[BLACKLISTED_FOLDERS] ?: emptySet()) - moved
         }
 
     suspend fun addBlacklistedFolders(blacklist: Set<String>) =
         context.dataStore.edit {
-            it[BLACKLISTED_FOLDERS] = (it[BLACKLISTED_FOLDERS] ?: emptySet()) + blacklist
-            it[WHITELISTED_FOLDERS] = (it[WHITELISTED_FOLDERS] ?: emptySet()) - blacklist
+            val moved = (it[WHITELISTED_FOLDERS] ?: emptySet()).under(blacklist)
+            it[BLACKLISTED_FOLDERS] = (it[BLACKLISTED_FOLDERS] ?: emptySet()) + blacklist + moved
+            it[WHITELISTED_FOLDERS] = (it[WHITELISTED_FOLDERS] ?: emptySet()) - blacklist - moved
         }
+
+    // the given roots themselves plus everything below them
+    private fun Set<String>.under(roots: Set<String>) =
+        filterTo(mutableSetOf()) { p -> roots.any { p == it || p.startsWith("$it/") } }
 
     suspend fun saveFoldersList(whitelist: Set<String>, blacklist: Set<String>) =
         context.dataStore.edit {

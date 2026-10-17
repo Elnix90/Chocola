@@ -1,6 +1,10 @@
 package com.sosauce.chocola.feature.settings.presentation
 
+import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.os.Environment
+import android.provider.DocumentsContract
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -89,6 +93,22 @@ fun SettingsLibrary(
         }
 
 
+    val folderTreePicker =
+        rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
+            if (uri == null) return@rememberLauncherForActivityResult
+            // only tree ids from this provider map to filesystem paths
+            if (uri.authority != "com.android.externalstorage.documents") {
+                Toast.makeText(context, R.string.folder_tree_unsupported, Toast.LENGTH_SHORT).show()
+                return@rememberLauncherForActivityResult
+            }
+            // tree id looks like "primary:Music" (internal) or "1234-ABCD:Music" (SD card)
+            val (volume, rel) = DocumentsContract.getTreeDocumentId(uri).split(':', limit = 2) + ""
+            val base = if (volume == "primary") Environment.getExternalStorageDirectory().path else "/storage/$volume"
+            autoAddSub = true
+            onHandleLibraryActions(LibraryActions.WhitelistFolders(listOf("$base/$rel".trimEnd('/'))))
+        }
+
+
     LazyColumn(
         contentPadding = contentPaddingValues
     ) {
@@ -111,6 +131,19 @@ fun SettingsLibrary(
                     bottomDp = 2.dp,
                     text = stringResource(R.string.rescan_tracks),
                     optionalDescription = R.string.rescan_tracks_desc
+                )
+                ClickableSettingsCard(
+                    onClick = {
+                        try {
+                            folderTreePicker.launch(null)
+                        } catch (e: ActivityNotFoundException) {
+                            Toast.makeText(context, R.string.no_folder_picker, Toast.LENGTH_SHORT).show()
+                        }
+                    },
+                    topDp = 2.dp,
+                    bottomDp = 2.dp,
+                    text = stringResource(R.string.whitelist_folder_tree),
+                    optionalDescription = R.string.whitelist_folder_tree_desc
                 )
                 SettingsSwitch(
                     checked = autoAddSub,
