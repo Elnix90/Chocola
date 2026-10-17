@@ -298,4 +298,8 @@
     <string name="blacklist">Keela</string>
     <string name="whitelist">Luba</string>
     <string name="select_new_value">Vali uus väärtus</string>
+    <string name="whitelist_folder_tree">Lisa kaust ja alamkaustad lubatud kaustade loendisse</string>
+    <string name="whitelist_folder_tree_desc">Vali kaust. See kaust ja kõik tema alamkaustad, sealhulgas hiljem lisatud kaustad saavad olema lubatud</string>
+    <string name="no_folder_picker">Selles seadmes ei leidunud ühtegi rakendust, mis oskaks kaustu valida</string>
+    <string name="folder_tree_unsupported">Sa võid valida vaid kaustu, mis asuvad selles seadmes</string>
 </resources>
