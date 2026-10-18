@@ -310,4 +310,8 @@
     <string name="blacklist">Czarna lista</string>
     <string name="whitelist">Biała lista</string>
     <string name="select_new_value">Wybierz nową wartość</string>
+    <string name="whitelist_folder_tree">Folder i podfoldery na białej liście</string>
+    <string name="whitelist_folder_tree_desc">Wybierz folder. Zostanie on dodany do białej listy wraz z obecnymi i nowo dodawanymi podfolderami</string>
+    <string name="no_folder_picker">Na tym urządzeniu nie znaleziono narzędzia do wyboru folderów</string>
+    <string name="folder_tree_unsupported">Można wybierać tylko foldery znajdujące się w pamięci urządzenia</string>
 </resources>
