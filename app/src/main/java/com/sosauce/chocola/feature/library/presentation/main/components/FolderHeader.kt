@@ -59,19 +59,13 @@ fun FolderHeader(
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(
-                onClick = {
-                    onHandlePlayerAction(
-                        PlayerActions.PlayFromSource(
-                            mediaId = null,
-                            source = PlaySource.ExplicitTracks(category.tracks)
-                        )
-                    )
-                },
+                onClick = onToggleVisibility,
                 shapes = IconButtonDefaults.shapes()
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.widget_play),
-                    contentDescription = null
+                    painter = painterResource(R.drawable.arrow_right),
+                    contentDescription = null,
+                    modifier = Modifier.rotate(iconRotation)
                 )
             }
             Icon(
@@ -84,13 +78,34 @@ fun FolderHeader(
                 modifier = Modifier.weight(1f)
             )
             IconButton(
-                onClick = onToggleVisibility,
+                onClick = {
+                    onHandlePlayerAction(
+                        PlayerActions.PlayFromSource(
+                            mediaId = null,
+                            source = PlaySource.ExplicitTracks(category.tracks)
+                        )
+                    )
+                },
                 shapes = IconButtonDefaults.shapes()
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.arrow_right),
-                    contentDescription = null,
-                    modifier = Modifier.rotate(iconRotation)
+                    painter = painterResource(R.drawable.shuffle),
+                    contentDescription = null
+                )
+            }
+            IconButton(
+                onClick = {
+                    onHandlePlayerAction(
+                        PlayerActions.StartPlaylist(
+                            source = PlaySource.ExplicitTracks(category.tracks)
+                        )
+                    )
+                },
+                shapes = IconButtonDefaults.shapes()
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.widget_play),
+                    contentDescription = null
                 )
             }
         }

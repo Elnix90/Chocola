@@ -610,7 +610,7 @@ class MusicViewModel(
                     is PlaySource.Album -> currentTracks.fastFilter { it.album == source.name }
                     is PlaySource.Artist -> currentTracks.fastFilter { it.artist == source.name }
                     is PlaySource.ExplicitTracks -> source.tracks
-                }.orderAlbumTrackNumber()
+                }
 
                 mediaController!!.setMediaItems(targetTracks.fastMap { it.toMediaItem() }, 0, 0)
             }

@@ -110,11 +110,6 @@ fun rememberFocusRequester(): FocusRequester {
 }
 
 
-fun <T> bouncySpec() = spring<T>(
-    dampingRatio = Spring.DampingRatioMediumBouncy,
-    stiffness = Spring.StiffnessLow
-)
-
 
 val barsContentTransform = ContentTransform(
     targetContentEnter = slideInVertically(

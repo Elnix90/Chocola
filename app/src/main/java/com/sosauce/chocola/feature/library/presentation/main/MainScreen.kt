@@ -7,8 +7,11 @@
 package com.sosauce.chocola.feature.library.presentation.main
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -50,6 +53,7 @@ import com.sosauce.chocola.feature.library.presentation.main.components.FolderHe
 import com.sosauce.chocola.core.domain.util.addOrRemove
 import com.sosauce.chocola.core.presentation.util.barsContentTransform
 import com.sosauce.chocola.core.domain.util.copyMutate
+import com.sosauce.nekobites.animations.bouncySpec
 import com.sosauce.chocola.core.presentation.util.selfAlignHorizontally
 import com.sosauce.nekobites.animations.AnimatedFab
 import com.sosauce.nekobites.components.LoadingBox
@@ -96,17 +100,23 @@ fun SharedTransitionScope.MainScreen(
                         onHandlePlayerActions = onHandlePlayerAction,
                         onNavigate = onNavigate,
                         fab = {
-                            AnimatedFab(
-                                onClick = {
-                                    onHandlePlayerAction(
-                                        PlayerActions.PlayFromSource(
-                                            mediaId = null,
-                                            source = PlaySource.All
+                            AnimatedVisibility(
+                                visible = !groupByFolders,
+                                enter = scaleIn(bouncySpec()),
+                                exit = scaleOut(bouncySpec())
+                            ) {
+                                AnimatedFab(
+                                    onClick = {
+                                        onHandlePlayerAction(
+                                            PlayerActions.PlayFromSource(
+                                                mediaId = null,
+                                                source = PlaySource.All
+                                            )
                                         )
-                                    )
-                                },
-                                icon = R.drawable.shuffle
-                            )
+                                    },
+                                    icon = R.drawable.shuffle
+                                )
+                            }
                         },
                         sortMenu = {
                             CuteSearchbarDefaults.TrackSortPopupContent()
