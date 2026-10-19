@@ -118,7 +118,8 @@ fun Nav(
                             musicState = musicState,
                             textFieldState = viewModel.textFieldState,
                             onNavigate = backStack::navigate,
-                            onHandlePlayerAction = musicViewModel::handlePlayerActions
+                            onHandlePlayerAction = musicViewModel::handlePlayerActions,
+                            onFolderToggle = viewModel::toggleHiddenFolder
                         )
                     }
 

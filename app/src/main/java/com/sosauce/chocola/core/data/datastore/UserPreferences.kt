@@ -22,6 +22,8 @@ import com.sosauce.chocola.core.data.datastore.PreferencesKeys.AUTO_ADD_SUBFOLDE
 import com.sosauce.chocola.core.data.datastore.PreferencesKeys.BLACKLISTED_FOLDERS
 import com.sosauce.chocola.core.data.datastore.PreferencesKeys.EQUALIZER_ENABLED
 import com.sosauce.chocola.core.data.datastore.PreferencesKeys.EQUALIZER_GAINS
+import com.sosauce.chocola.core.data.datastore.PreferencesKeys.GROUP_BY_FOLDERS
+import com.sosauce.chocola.core.data.datastore.PreferencesKeys.HIDDEN_FOLDERS
 import com.sosauce.chocola.core.data.datastore.PreferencesKeys.HIDDEN_TRACKS
 import com.sosauce.chocola.core.data.datastore.PreferencesKeys.LAST_MUSIC_STATE
 import com.sosauce.chocola.core.data.datastore.PreferencesKeys.MATCH_CASE_FILTER
@@ -46,10 +48,12 @@ import com.sosauce.chocola.core.domain.model.PlaylistSort
 import com.sosauce.chocola.core.domain.model.SearchSettings
 import com.sosauce.chocola.core.domain.model.TrackSort
 import com.sosauce.chocola.core.domain.model.TracksSettings
+import com.sosauce.chocola.core.domain.util.addOrRemove
 import com.sosauce.chocola.core.domain.util.copyMutate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -155,6 +159,25 @@ class UserPreferences(
     fun getAutoAddSubfolders() = context.dataStore.data.map {
         it[AUTO_ADD_SUBFOLDERS] ?: false
     }
+
+    val getHiddenFolders = context.dataStore.data.map {
+            it[HIDDEN_FOLDERS] ?: emptySet()
+        }
+
+    val getGroupByFolders = context.dataStore.data.map {
+            it[GROUP_BY_FOLDERS] ?: false
+        }
+
+    suspend fun toggleHiddenFolder(folder: String) =
+        context.dataStore.edit {
+            val current = it[HIDDEN_FOLDERS] ?: emptySet()
+            it[HIDDEN_FOLDERS] = current.copyMutate { addOrRemove(folder) }
+        }
+
+    suspend fun setGroupByFolders(enabled: Boolean) =
+        context.dataStore.edit {
+            it[GROUP_BY_FOLDERS] = enabled
+        }
 
     suspend fun saveSavedMusicState(musicState: MusicState) =
         context.dataStore.edit {

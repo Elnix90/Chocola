@@ -36,8 +36,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import com.sosauce.chocola.R
-import com.sosauce.chocola.core.presentation.preferences.rememberGroupByFolders
-import com.sosauce.chocola.core.presentation.preferences.rememberHiddenFolders
 import com.sosauce.chocola.core.domain.model.CuteTrack
 import com.sosauce.chocola.core.domain.player.MusicState
 import com.sosauce.chocola.core.domain.player.PlaySource
@@ -50,9 +48,7 @@ import com.sosauce.chocola.core.designsystem.components.NoResult
 import com.sosauce.chocola.core.presentation.components.TracksSelectedBar
 import com.sosauce.chocola.core.presentation.navigation.Screen
 import com.sosauce.chocola.feature.library.presentation.main.components.FolderHeader
-import com.sosauce.chocola.core.domain.util.addOrRemove
 import com.sosauce.chocola.core.presentation.util.barsContentTransform
-import com.sosauce.chocola.core.domain.util.copyMutate
 import com.sosauce.nekobites.animations.bouncySpec
 import com.sosauce.chocola.core.presentation.util.selfAlignHorizontally
 import com.sosauce.nekobites.animations.AnimatedFab
@@ -69,14 +65,15 @@ fun SharedTransitionScope.MainScreen(
     musicState: MusicState,
     textFieldState: TextFieldState,
     onNavigate: (Screen) -> Unit,
-    onHandlePlayerAction: (PlayerActions) -> Unit
+    onHandlePlayerAction: (PlayerActions) -> Unit,
+    onFolderToggle: (String) -> Unit
 ) {
 
     val lazyState = rememberLazyListState()
-    var hiddenFolders by rememberHiddenFolders()
-    var groupByFolders by rememberGroupByFolders()
     val multiSelectState = rememberSweetSelectState<CuteTrack>()
     val activeTrackId = remember(musicState.track) { musicState.track.mediaId }
+
+    val groupByFolders = state.groupByFolders
 
     Scaffold(
         contentWindowInsets = WindowInsets.safeDrawing,
@@ -138,7 +135,6 @@ fun SharedTransitionScope.MainScreen(
                     item(
                         key = "empty"
                     ) {
-
                         if (textFieldState.text.isEmpty()) {
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally
@@ -167,34 +163,24 @@ fun SharedTransitionScope.MainScreen(
 
 
                 if (groupByFolders) {
-                    val categories = state.tracks
-                        .groupBy { it.folder }
-                        .toSortedMap()
-                        .map { (folder, tracks) ->
-                            Category(
-                                path = folder,
-                                name = folder.substringAfterLast('/'),
-                                tracks = tracks
-                            )
-                        }
-                    categories.fastForEach { category ->
+                    state.categories.fastForEach { category ->
                         item(category.path) {
                             FolderHeader(
                                 modifier = Modifier.animateItem(),
                                 category = category,
-                                isHidden = category.path in hiddenFolders,
+                                isHidden = category.isHidden,
                                 onToggleVisibility = {
-                                    hiddenFolders =
-                                        hiddenFolders.copyMutate { addOrRemove(category.path) }
+                                    onFolderToggle(category.path)
                                 },
                                 onHandlePlayerAction = onHandlePlayerAction
                             )
                         }
-                        if (category.path !in hiddenFolders) {
+                        if (!category.isHidden) {
                             items(
                                 items = category.tracks,
                                 key = { it.mediaId }
                             ) { track ->
+
                                 val isSelected by multiSelectState.isSelectedAsState(track)
 
                                 MusicListItem(
@@ -226,7 +212,6 @@ fun SharedTransitionScope.MainScreen(
                             }
                         }
                     }
-
                 } else {
                     items(
                         items = state.tracks,
@@ -236,8 +221,7 @@ fun SharedTransitionScope.MainScreen(
                         val isSelected by multiSelectState.isSelectedAsState(track)
 
                         MusicListItem(
-                            modifier = Modifier
-                                .animateItem(),
+                            modifier = Modifier.animateItem(),
                             onShortClick = {
                                 if (multiSelectState.isInSelectionMode) {
                                     multiSelectState.toggle(track)
@@ -265,18 +249,6 @@ fun SharedTransitionScope.MainScreen(
                     }
                 }
             }
-
         }
     }
-
 }
-
-data class Category(
-    val path: String,
-    val name: String,
-    val tracks: List<CuteTrack>
-)
-
-
-
-
