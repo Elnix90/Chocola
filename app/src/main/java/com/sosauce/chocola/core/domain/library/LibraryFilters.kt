@@ -112,3 +112,7 @@ fun List<CuteTrack>.orderAlbumTrackNumber(): List<CuteTrack> {
         )
     )
 }
+
+fun List<CuteTrack>.sortByAlbum(): List<CuteTrack> {
+    return sortedWith(compareBy({it.album}, {it.trackNumber}))
+}

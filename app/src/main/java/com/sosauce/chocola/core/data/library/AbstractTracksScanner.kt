@@ -15,6 +15,7 @@ import com.sosauce.chocola.core.domain.model.CuteTrack
 import com.sosauce.chocola.core.domain.model.TrackSort
 import com.sosauce.chocola.core.data.content.observe
 import com.sosauce.chocola.core.domain.library.orderAlbumTrackNumber
+import com.sosauce.chocola.core.domain.library.sortByAlbum
 import com.sosauce.chocola.core.domain.util.combine
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -87,7 +88,7 @@ class AbstractTracksScanner(
             val filtered = rawTracks.fastFilter { track ->
                 whitelistedFolders.contains(track.folder)
             } + saf
-            if (tracksSettings.sort == TrackSort.ALBUM) filtered.orderAlbumTrackNumber() else filtered
+            if (tracksSettings.sort == TrackSort.ALBUM) filtered.sortByAlbum() else filtered
         }.flowOn(Dispatchers.IO)
     }
 
