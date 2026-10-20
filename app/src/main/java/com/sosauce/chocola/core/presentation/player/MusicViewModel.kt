@@ -40,6 +40,7 @@ import com.sosauce.chocola.core.domain.player.PlayerActions
 import com.sosauce.chocola.core.presentation.util.changeRepeatMode
 import com.sosauce.chocola.core.domain.util.copyMutate
 import com.sosauce.chocola.core.domain.library.orderAlbumTrackNumber
+import com.sosauce.chocola.core.domain.model.CuteTrack
 import com.sosauce.chocola.core.presentation.util.pauseWithFadeOut
 import com.sosauce.chocola.core.presentation.util.playOrPause
 import com.sosauce.chocola.core.presentation.util.playRandom
@@ -449,11 +450,11 @@ class MusicViewModel(
 
                 val targetTracks = when (val source = action.source) {
                     is PlaySource.All -> currentTracks
-                    is PlaySource.Album -> currentTracks.fastFilter { it.album == source.name }
+                    is PlaySource.Album -> currentTracks.fastFilter { it.album == source.name }.orderAlbumTrackNumber()
                     is PlaySource.Artist -> currentTracks.fastFilter { it.artist == source.name }
                     is PlaySource.ExplicitTracks -> source.tracks
-                }.orderAlbumTrackNumber()
-
+                }
+                
                 if (random) {
                     mediaController!!.setMediaItems(targetTracks.fastMap { it.toMediaItem() })
                     mediaController!!.playRandom()
@@ -607,7 +608,7 @@ class MusicViewModel(
 
                 val targetTracks = when (val source = action.source) {
                     is PlaySource.All -> currentTracks
-                    is PlaySource.Album -> currentTracks.fastFilter { it.album == source.name }
+                    is PlaySource.Album -> currentTracks.fastFilter { it.album == source.name }.orderAlbumTrackNumber()
                     is PlaySource.Artist -> currentTracks.fastFilter { it.artist == source.name }
                     is PlaySource.ExplicitTracks -> source.tracks
                 }

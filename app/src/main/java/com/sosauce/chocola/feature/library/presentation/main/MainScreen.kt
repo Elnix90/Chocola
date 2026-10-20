@@ -1,9 +1,3 @@
-@file:OptIn(
-    ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class,
-    ExperimentalSharedTransitionApi::class, ExperimentalMaterial3ExpressiveApi::class,
-    FlowPreview::class
-)
-
 package com.sosauce.chocola.feature.library.presentation.main
 
 import androidx.compose.animation.AnimatedContent

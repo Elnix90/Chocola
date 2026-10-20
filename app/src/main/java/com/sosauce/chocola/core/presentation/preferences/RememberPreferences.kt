@@ -104,9 +104,6 @@ fun rememberAlbumGrids() =
 fun rememberArtworkShape() =
     rememberPreference(key = ARTWORK_SHAPE, defaultValue = ArtworkShape.ROUNDED)
 
-@Composable
-fun rememberHiddenFolders() =
-    rememberPreference(key = HIDDEN_FOLDERS, defaultValue = emptySet())
 
 @Composable
 fun rememberUseArtAsBackground() =
