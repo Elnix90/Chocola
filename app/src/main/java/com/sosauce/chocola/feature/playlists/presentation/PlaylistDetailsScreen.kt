@@ -52,6 +52,7 @@ import com.sosauce.nekobites.animations.AnimatedFab
 import com.sosauce.nekobites.components.LoadingBox
 import com.sosauce.nekobites.utils.ColorUtils.toColor
 import com.sosauce.sweetselect.rememberSweetSelectState
+import kotlin.random.Random
 
 @Composable
 fun SharedTransitionScope.PlaylistDetailsScreen(
@@ -111,8 +112,8 @@ fun SharedTransitionScope.PlaylistDetailsScreen(
                                     onClick = {
                                         onHandlePlayerAction(
                                             PlayerActions.PlayFromSource(
-                                                mediaId = null,
-                                                source = PlaySource.ExplicitTracks(state.tracks)
+                                                mediaId = state.tracks[Random.nextInt(0, state.tracks.size)].mediaId,
+                                                source = PlaySource.ExplicitTracks(state.playlistTracks)
                                             )
                                         )
                                     },
@@ -152,7 +153,9 @@ fun SharedTransitionScope.PlaylistDetailsScreen(
                         item("header") {
                             PlaylistHeader(
                                 playlist = state.playlist,
+                                musicState = musicState,
                                 tracks = state.tracks,
+                                playlistTracks = state.playlistTracks,
                                 onHandlePlayerActions = onHandlePlayerAction
                             )
                             NumberOfTracks(size = state.tracks.size)
@@ -176,7 +179,7 @@ fun SharedTransitionScope.PlaylistDetailsScreen(
                                     onHandlePlayerAction(
                                         PlayerActions.PlayFromSource(
                                             mediaId = track.mediaId,
-                                            source = PlaySource.ExplicitTracks(state.tracks)
+                                            source = PlaySource.ExplicitTracks(state.playlistTracks)
                                         )
                                     )
                                 }
