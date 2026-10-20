@@ -88,7 +88,9 @@ class AbstractTracksScanner(
             val filtered = rawTracks.fastFilter { track ->
                 whitelistedFolders.contains(track.folder)
             } + saf
-            if (tracksSettings.sort == TrackSort.ALBUM) filtered.sortByAlbum() else filtered
+            if (tracksSettings.sort == TrackSort.ALBUM && tracksSettings.ascending) filtered.sortByAlbum()
+            else if (tracksSettings.sort == TrackSort.ALBUM) filtered.sortByAlbum().asReversed()
+            else filtered
         }.flowOn(Dispatchers.IO)
     }
 
