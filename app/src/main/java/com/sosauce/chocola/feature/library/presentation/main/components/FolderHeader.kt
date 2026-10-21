@@ -30,12 +30,10 @@ import com.sosauce.chocola.core.domain.player.PlaySource
 import com.sosauce.chocola.core.domain.player.PlayerActions
 import com.sosauce.chocola.feature.library.presentation.main.Category
 import com.sosauce.chocola.core.designsystem.ICON_TEXT_SPACING
-import com.sosauce.chocola.core.domain.player.MusicState
 
 @Composable
 fun FolderHeader(
     modifier: Modifier = Modifier,
-    musicState: MusicState,
     category: Category,
     isHidden: Boolean,
     onToggleVisibility: () -> Unit,
@@ -98,8 +96,7 @@ fun FolderHeader(
             IconButton(
                 onClick = {
                     onHandlePlayerAction(
-                        PlayerActions.PlayFromSource(
-                            mediaId = if (musicState.shuffle) null else category.tracks[0].mediaId,
+                        PlayerActions.StartPlaylist(
                             source = PlaySource.ExplicitTracks(category.tracks)
                         )
                     )
