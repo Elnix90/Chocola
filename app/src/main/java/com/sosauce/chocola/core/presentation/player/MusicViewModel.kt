@@ -614,6 +614,7 @@ class MusicViewModel(
                 }
 
                 mediaController!!.setMediaItems(targetTracks.fastMap { it.toMediaItem() }, 0, 0)
+                mediaController!!.play()
             }
         }
     }
