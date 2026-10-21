@@ -603,6 +603,7 @@ class MusicViewModel(
             }
 
             is PlayerActions.StartPlaylist -> {
+                mediaController!!.shuffleModeEnabled = !mediaController!!.shuffleModeEnabled
                 val currentTracks = tracks.value
 
 
