@@ -8,17 +8,27 @@ import com.sosauce.chocola.core.domain.model.Artist
 import com.sosauce.chocola.core.domain.model.CuteTrack
 import com.sosauce.chocola.core.domain.model.AlbumSort
 import com.sosauce.chocola.core.domain.model.ArtistSort
+import java.util.regex.PatternSyntaxException
 
 fun List<CuteTrack>.search(
     query: String,
     searchSettings: SearchSettings,
 ): List<CuteTrack> {
-    val regexPattern = query.regex(searchSettings.matchCase)
+    val regexPattern = try {
+        query.regex(searchSettings.matchCase)
+    } catch (_: PatternSyntaxException) {
+        Regex("")
+    }
     return filter { track ->
         if (searchSettings.regex) {
-            regexPattern.containsMatchIn(track.title)
+            regexPattern.containsMatchIn(track.title) || regexPattern.containsMatchIn(track.artist)
         } else {
-            track.title.contains(query, !searchSettings.matchCase)
+            try {
+                track.title.contains(query, !searchSettings.matchCase)
+                        || track.artist.contains(query, !searchSettings.matchCase)
+            } catch (_: PatternSyntaxException) {
+                false
+            }
         }
     }
 }
@@ -31,13 +41,22 @@ fun List<Album>.ordered(
     ascending: Boolean,
     query: String
 ): List<Album> {
-    val regexPattern = query.regex(matchCase)
+    val regexPattern = try {
+        query.regex(matchCase)
+    } catch (_: PatternSyntaxException) {
+        Regex("")
+    }
 
     val filtered = this.filter { track ->
         if (regex) {
-            regexPattern.containsMatchIn(track.name)
+            regexPattern.containsMatchIn(track.name) || regexPattern.containsMatchIn(track.artist)
         } else {
-            track.name.contains(query, !matchCase)
+            try {
+                track.name.contains(query, !matchCase)
+                        || track.artist.contains(query, !matchCase)
+            } catch (_: PatternSyntaxException) {
+                false
+            }
         }
     }
 
@@ -57,13 +76,21 @@ fun List<Artist>.ordered(
     ascending: Boolean,
     query: String
 ): List<Artist> {
-    val regexPattern = query.regex(matchCase)
+    val regexPattern = try {
+        query.regex(matchCase)
+    } catch (_: PatternSyntaxException) {
+        Regex("")
+    }
 
     val filtered = this.filter { track ->
         if (regex) {
             regexPattern.containsMatchIn(track.name)
         } else {
-            track.name.contains(query, !matchCase)
+            try {
+                track.name.contains(query, !matchCase)
+            } catch (_: PatternSyntaxException) {
+                false
+            }
         }
     }
 
@@ -84,4 +111,8 @@ fun List<CuteTrack>.orderAlbumTrackNumber(): List<CuteTrack> {
             { it.trackNumber }
         )
     )
+}
+
+fun List<CuteTrack>.sortByAlbum(): List<CuteTrack> {
+    return sortedWith(compareBy({it.album}, {it.trackNumber}))
 }
