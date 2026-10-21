@@ -43,14 +43,14 @@ class PlaylistDetailsViewModel(
         userPreferences.searchSettings(),
         searchQuery
     ) { playlist, tracks, settings, query ->
-        val filtered = tracks
+        val searched = tracks
             .fastFilter { playlist.musics.contains(it.mediaId) }
+            .search(query.toString(), settings)
 
 
         PlaylistDetailsState(
             isLoading = false,
-            tracks = filtered.search(query.toString(), settings),
-            playlistTracks = filtered,
+            tracks = searched,
             playlist = playlist
         )
     }.flowOn(Dispatchers.Default).stateIn(
@@ -77,6 +77,5 @@ class PlaylistDetailsViewModel(
 data class PlaylistDetailsState(
     val isLoading: Boolean = true,
     val playlist: Playlist = Playlist(),
-    val tracks: List<CuteTrack> = emptyList(),
-    val playlistTracks: List<CuteTrack> = emptyList()
+    val tracks: List<CuteTrack> = emptyList()
 )
