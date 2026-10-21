@@ -161,7 +161,6 @@ fun SharedTransitionScope.MainScreen(
                         item(category.path) {
                             FolderHeader(
                                 modifier = Modifier.animateItem(),
-                                musicState = musicState,
                                 category = category,
                                 isHidden = category.isHidden,
                                 onToggleVisibility = {
@@ -187,7 +186,7 @@ fun SharedTransitionScope.MainScreen(
                                             onHandlePlayerAction(
                                                 PlayerActions.PlayFromSource(
                                                     mediaId = track.mediaId,
-                                                    source = PlaySource.ExplicitTracks(category.tracks)
+                                                    source = PlaySource.All
                                                 )
                                             )
                                         }
