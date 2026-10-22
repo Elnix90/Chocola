@@ -39,12 +39,12 @@ class SafManager(
             val album = metadata?.propertyMap?.get("ALBUM")?.getOrNull(0) ?: "<unknown>"
             val artUri =
                 TagLib.getFrontCover(fd.dup().detachFd())?.data?.getUriFromByteArray(context)
-                    ?: Uri.EMPTY
+
 
             CuteTrack(
                 mediaId = uri.hashCode().toString(),
                 uriString = uri.toString(),
-                artUriString = artUri.toString(),
+                artUri = artUri?.toString(),
                 title = title,
                 artist = artist,
                 album = album,

@@ -8,7 +8,6 @@ import com.sosauce.chocola.core.data.local.MIGRATION_1_2
 import com.sosauce.chocola.core.data.local.PlaylistCleanup
 import com.sosauce.chocola.core.data.local.PlaylistDatabase
 import com.sosauce.chocola.core.data.library.FoldersRepository
-import com.sosauce.chocola.core.data.library.IDRepositories
 import com.sosauce.chocola.core.data.library.SafManager
 import com.sosauce.chocola.core.data.widgets.WidgetsHelper
 import com.sosauce.chocola.core.data.audio.EqualizerManager
@@ -63,7 +62,6 @@ val appModule = module {
     singleOf(::EqualizerManager)
     singleOf(::AndroidAutoHelper)
     singleOf(::WidgetsHelper)
-    singleOf(::IDRepositories)
     singleOf(::PlaylistCleanup)
     singleOf(::FoldersClassifier)
 

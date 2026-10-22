@@ -7,20 +7,19 @@ import kotlinx.serialization.Serializable
 data class CuteTrack(
     val mediaId: String = "",
     private val uriString: String = "",
-    private val artUriString: String = "",
+    val artUri: String? = null,
     val title: String = "",
     val artist: String = "",
     val album: String = "",
     val trackNumber: Int = 0,
     val folder: String = "",
     val path: String = "",
-    val isSaf: Boolean = false
+    val isSaf: Boolean = false,
+    val albumId: Long = -1
 ) {
     val uri
         get() = uriString.toUri()
 
-    val artUri
-        get() = artUriString.toUri()
 }
 
 

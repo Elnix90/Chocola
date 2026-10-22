@@ -2,18 +2,20 @@
 
 package com.sosauce.chocola.feature.library.presentation.album
 
+import android.content.ContentUris
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.util.fastFilter
+import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sosauce.chocola.core.data.library.AbstractTracksScanner
 import com.sosauce.chocola.core.data.datastore.UserPreferences
 import com.sosauce.chocola.core.domain.model.Album
-import com.sosauce.chocola.core.data.library.IDRepositories
 import com.sosauce.chocola.core.domain.library.orderAlbumTrackNumber
 import com.sosauce.chocola.core.domain.library.search
+import com.sosauce.chocola.feature.library.presentation.util.ImageUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -27,8 +29,7 @@ import kotlin.time.Duration.Companion.milliseconds
 class AlbumDetailsViewModel(
     private val albumName: String,
     private val userPreferences: UserPreferences,
-    private val abstractTracksScanner: AbstractTracksScanner,
-    private val idRepositories: IDRepositories
+    private val abstractTracksScanner: AbstractTracksScanner
 ) : ViewModel() {
 
 
@@ -46,14 +47,15 @@ class AlbumDetailsViewModel(
             .orderAlbumTrackNumber()
 
 
-        val lastTrack = filtered.lastOrNull()
-        val artist = lastTrack?.artist ?: ""
+        val lastTrack = filtered.last()
+        val albumId = lastTrack.albumId
 
         val album = Album(
-            id = idRepositories.getAlbumId(albumName),
+            id = albumId,
             name = albumName,
-            artist = artist,
-            tracks = filtered.search(query.toString(), settings)
+            artist = lastTrack.artist,
+            tracks = filtered.search(query.toString(), settings),
+            art = ImageUtils.getAlbumArt(albumId)
         )
 
         AlbumDetailsState(

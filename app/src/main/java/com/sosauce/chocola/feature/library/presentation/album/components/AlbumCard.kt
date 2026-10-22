@@ -56,7 +56,7 @@ fun SharedTransitionScope.AlbumCard(
             modifier = Modifier.size(48.dp)
         )
         AsyncImage(
-            model = ImageUtils.getAlbumArt(album.id),
+            model = album.art,
             contentDescription = stringResource(id = R.string.artwork),
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop

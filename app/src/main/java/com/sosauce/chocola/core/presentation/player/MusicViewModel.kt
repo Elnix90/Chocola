@@ -15,6 +15,7 @@ import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastFirst
 import androidx.compose.ui.util.fastFirstOrNull
 import androidx.compose.ui.util.fastMap
+import androidx.core.net.toUri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.C
@@ -28,6 +29,7 @@ import androidx.media3.session.SessionToken
 import coil3.imageLoader
 import coil3.request.ImageRequest
 import coil3.toBitmap
+import coil3.toUri
 import com.google.common.util.concurrent.MoreExecutors
 import com.sosauce.chocola.app.PlaybackService
 import com.sosauce.chocola.core.data.library.AbstractTracksScanner
@@ -91,7 +93,7 @@ class MusicViewModel(
                             track = track
                         )
                     }
-                    loadNewArt(track.artUri)
+                    loadNewArt(track.artUri?.toUri())
                     parseLyrics(track.path)
 
                 }
@@ -374,7 +376,7 @@ class MusicViewModel(
         }
 
         liveTrack?.let { track ->
-            loadNewArt(track.artUri)
+            loadNewArt(track.artUri?.toUri())
             parseLyrics(track.path)
         }
     }

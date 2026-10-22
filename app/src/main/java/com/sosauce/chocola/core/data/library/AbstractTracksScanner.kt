@@ -6,6 +6,7 @@ import android.content.ContentUris
 import android.content.Context
 import android.database.Cursor
 import android.provider.MediaStore
+import android.util.Size
 import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastForEach
 import androidx.core.net.toUri
@@ -159,6 +160,7 @@ class AbstractTracksScanner(
         val albumColumn = getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM)
         val folderColumn = getColumnIndexOrThrow(MediaStore.Audio.Media.DATA)
         val trackNbColumn = getColumnIndexOrThrow(MediaStore.Audio.Media.TRACK)
+        val albumIdColumn = getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID)
 
         while (moveToNext()) {
 
@@ -170,25 +172,29 @@ class AbstractTracksScanner(
             val filePath = getString(folderColumn)
             val folder = filePath.substringBeforeLast('/')
             val trackNumber = getInt(trackNbColumn)
+            val albumId = getLong(albumIdColumn)
             val uri = ContentUris.withAppendedId(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 id
-            ).toString()
+            )
+
+
 
             val mediaId = id.toString()
 
             into.add(
                 CuteTrack(
                     mediaId = mediaId,
-                    uriString = uri,
-                    artUriString = "$uri/albumart",
+                    uriString = uri.toString(),
+                    artUri = "$uri/albumart",
                     title = title,
                     artist = artist,
                     album = album,
                     trackNumber = trackNumber,
                     folder = folder,
                     path = filePath,
-                    isSaf = false
+                    isSaf = false,
+                    albumId = albumId
                 )
             )
         }
@@ -238,7 +244,8 @@ class AbstractTracksScanner(
             MediaStore.Audio.Media.ARTIST,
             MediaStore.Audio.Media.ALBUM,
             MediaStore.Audio.Media.DATA,
-            MediaStore.Audio.Media.TRACK
+            MediaStore.Audio.Media.TRACK,
+            MediaStore.Audio.Media.ALBUM_ID
         )
     }
 

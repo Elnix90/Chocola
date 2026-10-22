@@ -14,6 +14,7 @@ import com.sosauce.chocola.core.domain.model.Album
 import com.sosauce.chocola.core.domain.model.Artist
 import com.sosauce.chocola.core.domain.model.CuteTrack
 import com.sosauce.chocola.core.domain.library.search
+import com.sosauce.chocola.feature.library.presentation.util.ImageUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.SharingStarted
@@ -43,12 +44,16 @@ class ArtistDetailsViewModel(
             .fastFilter { it.artist == artistName }
             .search(query.toString(), settings)
 
-        val albums = searched.groupBy { it.album }
+        val albums = searched
+            .groupBy { it.album }
             .map { (albumName, tracks) ->
+                val lastTrack = tracks.last()
+
                 Album(
                     name = albumName,
                     artist = artistName,
-                    tracks = tracks
+                    tracks = tracks,
+                    art = ImageUtils.getAlbumArt(lastTrack.albumId)
                 )
             }
 

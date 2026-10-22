@@ -1,7 +1,8 @@
-@file:OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
+@file:OptIn(FlowPreview::class)
 
 package com.sosauce.chocola.feature.library.presentation.album
 
+import android.content.ContentUris
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.snapshotFlow
@@ -10,31 +11,27 @@ import androidx.lifecycle.viewModelScope
 import com.sosauce.chocola.core.data.library.AbstractTracksScanner
 import com.sosauce.chocola.core.data.datastore.UserPreferences
 import com.sosauce.chocola.core.domain.model.Album
-import com.sosauce.chocola.core.data.library.IDRepositories
 import com.sosauce.chocola.core.domain.util.combine
 import com.sosauce.chocola.core.domain.library.ordered
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
-import kotlin.random.Random
 import kotlin.time.Duration.Companion.milliseconds
+import androidx.core.net.toUri
+import com.sosauce.chocola.feature.library.presentation.util.ImageUtils
 
 class AlbumsViewModel(
     private val abstractTracksScanner: AbstractTracksScanner,
-    private val userPreferences: UserPreferences,
-    private val idRepository: IDRepositories
+    private val userPreferences: UserPreferences
 ) : ViewModel() {
 
 
     val textFieldState = TextFieldState()
     private val searchQuery = snapshotFlow { textFieldState.text }.debounce(250.milliseconds)
 
-
-    private val ids = idRepository.getAllAlbumIds()
 
     val state = combine(
         abstractTracksScanner.latestTracks(),
@@ -46,15 +43,17 @@ class AlbumsViewModel(
     ) { tracks, sort, regex, matchCase, ascending, query ->
         val albums = tracks
             .groupBy { it.album }
-            .map { (album, tracks) ->
+            .map { (album, albumTracks) ->
 
-                val lastTrack = tracks.lastOrNull()
+                val lastTrack = albumTracks.last()
+                val albumId = lastTrack.albumId
 
                 Album(
-                    id = ids.getOrElse(album) { Random.nextLong() },
+                    id = albumId,
                     name = album,
-                    artist = lastTrack?.artist ?: "",
-                    tracks = tracks
+                    artist = lastTrack.artist,
+                    tracks = albumTracks,
+                    art = ImageUtils.getAlbumArt(albumId)
                 )
             }
             .ordered(sort, regex, matchCase, ascending, query.toString())
@@ -69,29 +68,6 @@ class AlbumsViewModel(
         AlbumsState(isLoading = true)
     )
 
-
-//    init {
-//        viewModelScope.launch(Dispatchers.IO) {
-//            val albums = albumsRepository.fetchAlbums()
-//
-//            combine(
-//                userPreferences.getAlbumsSort,
-//                userPreferences.getRegexFilter,
-//                userPreferences.getMatchCaseFilter,
-//                userPreferences.sortAlbumsAscending,
-//                searchQuery
-//            ) { sort, regex, matchCase, ascending, query ->
-//                val sortedAlbums = albums.ordered(sort, regex, matchCase, ascending, query.toString())
-//
-//                AlbumsState(
-//                    isLoading = false,
-//                    albums = sortedAlbums,
-//                    isSearching = query.isNotEmpty()
-//                )
-//            }.collectLatest { newState -> _state.update { newState } }
-//        }
-//
-//    }
 
 
 }

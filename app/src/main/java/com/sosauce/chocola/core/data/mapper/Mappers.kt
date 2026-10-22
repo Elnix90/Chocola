@@ -1,5 +1,6 @@
 package com.sosauce.chocola.core.data.mapper
 
+import androidx.core.net.toUri
 import androidx.datastore.preferences.core.Preferences
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
@@ -26,7 +27,7 @@ fun CuteTrack.toMediaItem(): MediaItem {
         .setTitle(title)
         .setArtist(artist)
         .setAlbumTitle(album)
-        .setArtworkUri(artUri)
+        .setArtworkUri(artUri?.toUri())
         .build()
 
     return MediaItem.Builder()

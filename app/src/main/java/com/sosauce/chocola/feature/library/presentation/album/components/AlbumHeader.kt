@@ -51,7 +51,7 @@ fun SharedTransitionScope.AlbumHeader(
             .background(MaterialTheme.colorScheme.surfaceContainer)
     ) {
         AsyncImage(
-            model = ImageUtils.getAlbumArt(album.id),
+            model = album.art,
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop

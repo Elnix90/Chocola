@@ -64,6 +64,7 @@ import com.sosauce.chocola.core.designsystem.components.NumberOfAlbums
 import com.sosauce.chocola.feature.library.presentation.util.ImageUtils
 import com.sosauce.chocola.core.presentation.util.barsContentTransform
 import com.sosauce.chocola.core.presentation.util.selfAlignHorizontally
+import com.sosauce.chocola.feature.library.presentation.album.components.AlbumCard
 import com.sosauce.nekobites.animations.AnimatedFab
 import com.sosauce.nekobites.components.LoadingBox
 import com.sosauce.sweetselect.rememberSweetSelectState
@@ -151,84 +152,22 @@ fun SharedTransitionScope.ArtistDetailsScreen(
                     ) {
                         NumberOfAlbums(state.albums.size)
 
+
                         HorizontalMultiBrowseCarousel(
-                            state = rememberCarouselState { state.albums.count() },
+                            state = rememberCarouselState { state.albums.size },
                             preferredItemWidth = 186.dp,
                             itemSpacing = 5.dp,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(top = 16.dp, bottom = 16.dp)
+                                .padding(vertical = 16.dp)
                         ) { index ->
                             val album = state.albums[index]
 
-                            Box(
-                                modifier = Modifier
-                                    .maskClip(MaterialTheme.shapes.extraLarge)
-                                    .fillMaxWidth()
-                                    .aspectRatio(1f)
-                                    .background(MaterialTheme.colorScheme.surfaceContainer)
-                                    .clickable {
-                                        onNavigate(
-                                            Screen.AlbumsDetails(
-                                                name = album.name
-                                            )
-                                        )
-                                    },
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    painter = painterResource(R.drawable.album_filled),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(48.dp)
-                                )
-                                AsyncImage(
-                                    model = ImageUtils.getAlbumArt(album.id),
-                                    contentDescription = stringResource(id = R.string.artwork),
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentScale = ContentScale.Crop
-                                )
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .align(Alignment.BottomStart)
-                                        .background(
-                                            brush = Brush.verticalGradient(
-                                                listOf(
-                                                    Color.Transparent,
-                                                    MaterialTheme.colorScheme.background
-                                                )
-                                            )
-                                        )
-                                        .padding(15.dp)
-                                ) {
-                                    Text(
-                                        text = album.name,
-                                        maxLines = 1,
-                                        style = MaterialTheme.typography.titleMediumEmphasized,
-                                        modifier = Modifier
-                                            .sharedBounds(
-                                                sharedContentState = rememberSharedContentState(
-                                                    album.name + album.id
-                                                ),
-                                                animatedVisibilityScope = LocalNavAnimatedContentScope.current
-                                            )
-                                            .basicMarquee()
-                                    )
-                                    Text(
-                                        text = album.artist,
-                                        style = MaterialTheme.typography.bodyLargeEmphasized,
-                                        modifier = Modifier
-                                            .sharedElement(
-                                                sharedContentState = rememberSharedContentState(
-                                                    album.artist + album.id
-                                                ),
-                                                animatedVisibilityScope = LocalNavAnimatedContentScope.current
-                                            )
-                                            .basicMarquee()
-
-                                    )
-                                }
-                            }
+                            AlbumCard(
+                                album = album,
+                                onClick = { onNavigate(Screen.AlbumsDetails(name = album.name)) },
+                                modifier = Modifier.maskClip(MaterialTheme.shapes.extraLarge)
+                            )
                         }
                     }
                 }

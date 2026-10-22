@@ -91,12 +91,12 @@ class QuickPlayViewModel(
             val title = mediaMetadata.title?.toString() ?: trackUri.path?.substringAfterLast('/')
                 ?.substringBeforeLast('.')
             val artist = mediaMetadata.artist?.toString() ?: "<unknown>"
-            val art = mediaMetadata.artworkData?.getUriFromByteArray(application) ?: Uri.EMPTY
+            val art = mediaMetadata.artworkData?.getUriFromByteArray(application)
 
             val track = CuteTrack(
                 title = title ?: "<unknown>",
                 artist = artist,
-                artUriString = art.toString()
+                artUri = art?.toString()
             )
 
             _musicState.update {
