@@ -5,6 +5,8 @@ package com.sosauce.chocola.app
 import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Intent
+import android.content.pm.ApplicationInfo
+import android.os.Looper
 import androidx.annotation.OptIn
 import androidx.compose.ui.util.fastFilter
 import androidx.lifecycle.lifecycleScope
@@ -12,6 +14,7 @@ import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.util.ExperimentalApi
 import androidx.media3.common.util.UnstableApi
@@ -33,9 +36,10 @@ import com.sosauce.chocola.core.data.widgets.WIDGET_TITLE
 import com.sosauce.chocola.core.data.widgets.WidgetsHelper
 import com.sosauce.chocola.core.data.audio.EqualizerManager
 import com.sosauce.chocola.core.data.auto.AndroidAutoHelper
+import com.sosauce.chocola.core.data.bakery.PlaybackSnapshot
+import com.sosauce.chocola.core.data.bakery.StatsRecorder
 import com.sosauce.chocola.core.designsystem.CUTE_MUSIC_ID
 import com.sosauce.chocola.core.presentation.util.playOrPause
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
@@ -52,6 +56,8 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
     private val equalizerManager by inject<EqualizerManager>()
     private val androidAutoHelper by inject<AndroidAutoHelper>()
     private val widgetsHelper by inject<WidgetsHelper>()
+
+    private val statsRecorder by inject<StatsRecorder>()
     private val audioAttributes = AudioAttributes
         .Builder()
         .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
@@ -61,14 +67,45 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
     private var keepAliveEnabled = false
     private var keepAliveJob: Job? = null
 
-
     val listener = object : Player.Listener {
 
         override fun onIsPlayingChanged(isPlaying: Boolean) {
             super.onIsPlayingChanged(isPlaying)
             widgetsHelper.updateMusicWidgetData(WIDGET_IS_PLAYING, isPlaying)
+            playbackSnapshot()?.let(statsRecorder::onIsPlayingChanged)
         }
 
+        override fun onPlaybackStateChanged(playbackState: Int) {
+            super.onPlaybackStateChanged(playbackState)
+            if (playbackState == Player.STATE_ENDED || playbackState == Player.STATE_IDLE) {
+                statsRecorder.onPlaybackEnded()
+            }
+        }
+
+        override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+            super.onMediaItemTransition(mediaItem, reason)
+            val item = mediaItem ?: return
+            playbackSnapshot(item)?.let(statsRecorder::onMediaItemTransition)
+        }
+
+        override fun onPositionDiscontinuity(
+            oldPosition: Player.PositionInfo,
+            newPosition: Player.PositionInfo,
+            reason: Int
+        ) {
+            super.onPositionDiscontinuity(oldPosition, newPosition, reason)
+            if (
+                reason == Player.DISCONTINUITY_REASON_SEEK ||
+                reason == Player.DISCONTINUITY_REASON_SEEK_ADJUSTMENT
+            ) {
+                playbackSnapshot()?.let(statsRecorder::onSeek)
+            }
+        }
+
+        override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {
+            super.onPlaybackParametersChanged(playbackParameters)
+            playbackSnapshot()?.let(statsRecorder::onPlaybackSpeedChanged)
+        }
 
         @SuppressLint("UnsafeOptInUsageError")
         override fun onAudioSessionIdChanged(audioSessionId: Int) {
@@ -91,7 +128,28 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
                 key = WIDGET_ART,
                 value = widgetsHelper.artToByteArrayString(mediaMetadata.artworkData)
             )
+
         }
+    }
+
+    private fun playbackSnapshot(mediaItem: MediaItem? = null): PlaybackSnapshot? {
+        val player = mediaLibrarySession?.player ?: return null
+        val item = mediaItem ?: player.currentMediaItem ?: return null
+        val metadata = item.mediaMetadata
+
+        return PlaybackSnapshot(
+            mediaId = item.mediaId,
+            title = metadata.title?.toString().orEmpty(),
+            artist = metadata.artist?.toString().orEmpty(),
+            album = metadata.albumTitle?.toString().orEmpty(),
+            artworkUri = metadata.artworkUri?.toString(),
+            durationMillis = player.duration.takeIf { it > 0 }
+                ?: metadata.durationMs?.takeIf { it > 0 }
+                ?: 0L,
+            positionMillis = player.currentPosition,
+            playbackSpeed = player.playbackParameters.speed,
+            isPlaying = player.isPlaying
+        )
     }
 
     val callback = object : MediaLibrarySession.Callback {
@@ -230,6 +288,7 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
     override fun onDestroy() {
         keepAliveJob?.cancel()
         keepAliveJob = null
+        statsRecorder.release()
         equalizerManager.releaseDynamicsProcessing()
         mediaLibrarySession?.let {
             it.player.removeListener(listener)
@@ -244,11 +303,11 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
 
     @UnstableApi
     override fun onTaskRemoved(rootIntent: Intent?) {
-        val isPlaying = mediaLibrarySession?.player?.isPlaying == true
-        if (keepAliveEnabled && isPlaying) {
+        if (keepAliveEnabled && mediaLibrarySession!!.player.isPlaying) {
             super.onTaskRemoved(rootIntent)
             return
         }
+        statsRecorder.onPlaybackEnded()
         equalizerManager.releaseDynamicsProcessing()
         mediaLibrarySession?.let {
             it.player.removeListener(listener)
@@ -270,6 +329,7 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
 
         return super.onStartCommand(intent, flags, startId)
     }
+
 
 
     companion object {

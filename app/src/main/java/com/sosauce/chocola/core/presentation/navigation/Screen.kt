@@ -1,6 +1,7 @@
 package com.sosauce.chocola.core.presentation.navigation
 
 import androidx.navigation3.runtime.NavKey
+import com.sosauce.chocola.feature.bakery.presentation.model.PeriodId
 import com.sosauce.chocola.feature.settings.presentation.components.SettingsScreen
 import kotlinx.serialization.Serializable
 
@@ -25,6 +26,11 @@ sealed class Screen : NavKey {
 
     @Serializable
     data object Setup : Screen()
+
+    @Serializable
+    data class BakeryStory(
+        val period: PeriodId
+    ) : Screen()
 
     @Serializable
     data object Queue : Screen()

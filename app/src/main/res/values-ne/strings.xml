@@ -5,10 +5,6 @@
     <string name="dark_mode">डार्क</string>
     <string name="light_mode">लाइट</string>
     <string name="amoled_mode">AMOLED_मोड</string>
-    <string name="version">संस्करण</string>
-    <string name="support">सहयोग</string>
-    <string name="update">अपडेट जाँच गर्नुहोस्</string>
-    <string name="about">बारेमा</string>
     <string name="size">आकार</string>
     <string name="type">प्रकार</string>
     <string name="bitrate">बिटरेट</string>
@@ -19,15 +15,8 @@
     <string name="artwork">कभर चित्र</string>
     <string name="artists">कलाकारहरू</string>
     <string name="albums">एल्बम</string>
-    <string name="music">ट्र्याकहरू</string>
-    <string name="cm_by_sosauce">sosauce द्वारा Chocola</string>
     <string name="app_icon">एप आइकन</string>
-    <string name="search">खोज्नुहोस्</string>
     <string name="close">बन्द गर्नुहोस्</string>
-    <string name="more">थप</string>
-    <string name="hi_there">नमस्ते!</string>
-    <string name="permission_needed">CuteMusic लाई तपाईंका ट्र्याकहरू पहुँच गर्ने अनुमति नभएको जस्तो देखिन्छ! तपाईं तलबाट अनुमति दिन सक्नुहुन्छ!</string>
-    <string name="permission_granted">अनुमति प्रदान गरियो, अब तपाईं अगाडि बढ्न सक्नुहुन्छ…</string>
     <string name="request_permission">अनुमति दिनुहोस्</string>
     <string name="next_step">अर्को चरण</string>
     <string name="no_music_title">कुनै ट्र्याक भेटिएन!</string>
