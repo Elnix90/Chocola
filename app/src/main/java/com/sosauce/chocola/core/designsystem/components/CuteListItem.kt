@@ -24,7 +24,7 @@ fun CuteListItem(
     modifier: Modifier = Modifier,
     shape: Shape = RoundedCornerShape(24.dp),
     backgroundColor: Color = Color.Transparent,
-    onClick: () -> Unit,
+    onClick: (() -> Unit)?,
     onLongClick: (() -> Unit)? = null,
     leadingContent: @Composable () -> Unit,
     trailingContent: (@Composable () -> Unit)? = null,
@@ -36,7 +36,8 @@ fun CuteListItem(
             .clip(shape)
             .background(backgroundColor)
             .combinedClickable(
-                onClick = onClick,
+                enabled = onClick != null || onLongClick != null,
+                onClick = { onClick?.invoke() },
                 onLongClick = onLongClick
             )
     ) {

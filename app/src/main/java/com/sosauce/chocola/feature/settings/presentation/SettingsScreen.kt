@@ -54,6 +54,7 @@ import com.sosauce.chocola.core.presentation.navigation.Screen
 import com.sosauce.chocola.app.navigation.navigate
 import com.sosauce.chocola.app.navigation.navigateBack
 import com.sosauce.chocola.feature.playing.presentation.aod.AlwaysOnDisplay
+import com.sosauce.chocola.feature.bakery.presentation.BakeryRoot
 import com.sosauce.chocola.feature.settings.presentation.components.AboutCard
 import com.sosauce.chocola.feature.settings.presentation.components.SettingsCategoryCard
 import com.sosauce.chocola.feature.settings.presentation.components.SettingsScreen
@@ -121,6 +122,12 @@ fun SettingsScreen(
             name = stringResource(R.string.backup_and_restore),
             description = stringResource(R.string.backup_and_restore_desc),
             onNavigate = { backstack.navigate(SettingsScreen.Backup) }
+        ),
+        Item(
+            icon = R.drawable.cookie,
+            name = stringResource(R.string.bakery),
+            description = stringResource(R.string.bakery_desc),
+            onNavigate = { backstack.navigate(SettingsScreen.Bakery) }
         )
     )
 
@@ -332,6 +339,19 @@ fun SettingsScreen(
                         }
                     }
 
+                }
+
+                entry<SettingsScreen.Bakery> {
+                    BakeryRoot(
+                        onNavigateUp = {
+                            if (backstack.size == 1) {
+                                onNavigateUp()
+                            } else {
+                                backstack.navigateBack()
+                            }
+                        },
+                        onNavigate = onNavigate
+                    )
                 }
 
                 entry<SettingsScreen.Library> {

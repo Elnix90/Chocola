@@ -101,6 +101,7 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.ui)
+    debugImplementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.datastore.preferences)
@@ -137,5 +138,9 @@ dependencies {
     implementation(libs.squircle.shape)
     implementation(libs.cloudy)
     implementation(libs.nekobites)
+    implementation(libs.haze.blur)
+    implementation(libs.haze.blur.materials)
+    implementation(libs.haze.blur.material3)
+
 }
 

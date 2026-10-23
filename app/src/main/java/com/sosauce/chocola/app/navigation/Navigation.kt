@@ -34,6 +34,7 @@ import androidx.navigation3.ui.NavDisplay
 import com.sosauce.chocola.R
 import com.sosauce.chocola.core.presentation.preferences.rememberInitialScreenBlocking
 import com.sosauce.chocola.core.presentation.player.MusicViewModel
+import com.sosauce.chocola.feature.bakery.presentation.story.BakeryStoryRoot
 import com.sosauce.chocola.feature.library.presentation.album.AlbumDetailsScreen
 import com.sosauce.chocola.feature.library.presentation.album.AlbumDetailsViewModel
 import com.sosauce.chocola.feature.library.presentation.album.AlbumsScreen
@@ -144,6 +145,13 @@ fun Nav(
                             musicState = musicState,
                             onNavigate = backStack::navigate,
                             onHandlePlayerActions = musicViewModel::handlePlayerActions
+                        )
+                    }
+
+                    entry<Screen.BakeryStory> { key ->
+                        BakeryStoryRoot(
+                            period = key.period,
+                            onClose = backStack::navigateBack
                         )
                     }
 

@@ -32,4 +32,7 @@ sealed class SettingsScreen : NavKey {
 
     @Serializable
     data object Backup : SettingsScreen()
+
+    @Serializable
+    data object Bakery : SettingsScreen()
 }
