@@ -118,7 +118,7 @@ dependencies {
     implementation(libs.material.kolor)
     implementation(libs.koin.androidx.startup)
     implementation(libs.taglib)
-    debugImplementation(libs.androidx.ui.tooling)
+    implementation(libs.androidx.ui.tooling)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.emoji2.emojipicker)
     implementation(libs.kmpalette.core)

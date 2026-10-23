@@ -81,62 +81,45 @@ fun BakeryScreen(
 ) {
     val isEmpty = state.allTime == null && state.months.isEmpty() && state.years.isEmpty()
 
-    Scaffold(
-        contentWindowInsets = WindowInsets.safeDrawing,
-        bottomBar = {
+    LoadingBox(
+        isLoading = state.isLoading
+    ) {
+        if (isEmpty) {
+            BakeryEmptyState(
+                modifier = Modifier.fillMaxSize()
+            )
+        } else {
 
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(26.dp)
+            ) {
+                state.allTime?.let { allTime ->
+                    AllTimeHeader(
+                        stats = allTime,
+                        streak = state.streak,
+                        modifier = Modifier.padding(horizontal = 20.dp)
+                    )
+                }
 
-        }
-    ) { paddingValues ->
-        LoadingBox(
-            isLoading = state.isLoading
-        ) {
-            if (isEmpty) {
-                BakeryEmptyState(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues)
-                )
-            } else {
+                if (state.months.isNotEmpty()) {
+                    PeriodCarousel(
+                        title = R.string.monthly_bakeries,
+                        periods = state.months,
+                        onPeriodClick = { onAction(BakeryAction.OpenPeriod(it)) }
+                    )
+                }
 
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = paddingValues,
-                    verticalArrangement = Arrangement.spacedBy(26.dp)
-                ) {
-                    state.allTime?.let { allTime ->
-                        item(key = "all_time") {
-                            AllTimeHeader(
-                                stats = allTime,
-                                streak = state.streak,
-                                modifier = Modifier.padding(horizontal = 20.dp)
-                            )
-                        }
-                    }
-
-                    if (state.months.isNotEmpty()) {
-                        item(key = "months") {
-                            PeriodCarousel(
-                                title = R.string.monthly_bakeries,
-                                periods = state.months,
-                                onPeriodClick = { onAction(BakeryAction.OpenPeriod(it)) }
-                            )
-                        }
-                    }
-
-                    if (state.years.isNotEmpty()) {
-                        item(key = "years") {
-                            PeriodCarousel(
-                                title = R.string.yearly_bakeries,
-                                periods = state.years,
-                                onPeriodClick = { onAction(BakeryAction.OpenPeriod(it)) }
-                            )
-                        }
-                    }
+                if (state.years.isNotEmpty()) {
+                    PeriodCarousel(
+                        title = R.string.yearly_bakeries,
+                        periods = state.years,
+                        onPeriodClick = { onAction(BakeryAction.OpenPeriod(it)) }
+                    )
                 }
             }
-
         }
+
     }
 }
 

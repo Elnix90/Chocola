@@ -342,16 +342,22 @@ fun SettingsScreen(
                 }
 
                 entry<SettingsScreen.Bakery> {
-                    BakeryRoot(
-                        onNavigateUp = {
-                            if (backstack.size == 1) {
-                                onNavigateUp()
-                            } else {
-                                backstack.navigateBack()
-                            }
-                        },
-                        onNavigate = onNavigate
-                    )
+                    Column(
+                        modifier = Modifier
+                            .verticalScroll(scrollState)
+                            .padding(paddingValues)
+                    ) {
+                        BakeryRoot(
+                            onNavigateUp = {
+                                if (backstack.size == 1) {
+                                    onNavigateUp()
+                                } else {
+                                    backstack.navigateBack()
+                                }
+                            },
+                            onNavigate = onNavigate
+                        )
+                    }
                 }
 
                 entry<SettingsScreen.Library> {
