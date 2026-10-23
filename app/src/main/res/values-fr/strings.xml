@@ -5,10 +5,6 @@
     <string name="dark_mode">Sombre</string>
     <string name="light_mode">Clair</string>
     <string name="amoled_mode">Amoled</string>
-    <string name="version">Version</string>
-    <string name="support">Assistance</string>
-    <string name="update">Vérifier les mises à jour</string>
-    <string name="about">À propos</string>
     <string name="size">Taille</string>
     <string name="type">Type</string>
     <string name="bitrate">Débit binaire</string>
@@ -80,7 +76,6 @@
     <string name="edit_playlist">Modifier la playlist</string>
     <string name="remove_from_playlist">Supprimer de la playlist</string>
     <string name="emoji">Emoji</string>
-    <string name="remove_emoji">Supprimer l\’emoji</string>
     <string name="look_and_feel">Aspect &amp; convivialité</string>
     <string name="look_and_feel_desc">La musique, c\'est vous qui la choisissez, alors pourquoi pas le style aussi ?</string>
     <string name="now_playing">Lecture en cours</string>
