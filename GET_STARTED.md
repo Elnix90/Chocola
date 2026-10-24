@@ -22,8 +22,8 @@ CuteApps currently don't have a lot of guidelines, but it is best if you follow 
 
 1. **Clone the repository:**
    ```sh
-   git clone https://github.com/sosauce/CuteMusic.git
-   cd CuteMusic
+   git clone https://github.com/sosauce/Chocola.git
+   cd Chocola
    ```
 
 2. **Open the project in Android Studio:**
