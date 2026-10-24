@@ -3,17 +3,17 @@
 <p align="center">Chocola (<a href="https://medium.com/p/1a1f37640370">formerly CuteMusic</a>) is a cute and powerful offline music player for Android!</p>
 
  <p align="center">
-   <img src="https://img.shields.io/github/downloads/sosauce/CuteMusic/total?style=for-the-badge&logo=github&color=f5a6bd"/>
-   <img src="https://img.shields.io/github/v/release/sosauce/CuteMusic?style=for-the-badge&logo=github&color=f5a6bd"/>
+   <img src="https://img.shields.io/github/downloads/sosauce/Chocola/total?style=for-the-badge&logo=github&color=f5a6bd"/>
+   <img src="https://img.shields.io/github/v/release/sosauce/Chocola?style=for-the-badge&logo=github&color=f5a6bd"/>
    <image src="https://img.shields.io/badge/Kotlin-100%25-f5a6bd?style=for-the-badge&logo=Kotlin"/>
  </p> 
  <p align="center">
-   <a href="https://github.com/sosauce/CuteMusic/blob/main/README_ES.MD">
+   <a href="https://github.com/sosauce/Chocola/blob/main/README_ES.MD">
      <img src="https://img.shields.io/badge/Disponible_en-español-blue?style=for-the-badge&color=f5a6bd" alt="Disponible en español"/>
    </a>
 </p>
  <p align="center">
- <a href="https://github.com/sosauce/CuteMusic/releases">
+ <a href="https://github.com/sosauce/Chocola/releases">
    <image src="https://i.ibb.co/q0mdc4Z/get-it-on-github.png" height="80"/>
  </a>
   <a href="https://apt.izzysoft.de/fdroid/index/apk/com.sosauce.cutemusic">
@@ -92,7 +92,7 @@ You can find a copy of the GNU General Public License v3 [here](https://www.gnu.
 
 
 ---
-To get started with contributing, please check the [get started readme](https://github.com/sosauce/CuteMusic/blob/main/GET_STARTED.md)
+To get started with contributing, please check the [get started readme](https://github.com/sosauce/Chocola/blob/main/GET_STARTED.md)
 
 ---
 

@@ -4,13 +4,13 @@
 <p align="center">Chocola es una aplicación sencilla, ligera y de código abierto para reproducir música offline en Android, desarrollada en Jetpack Compose y Media3.</p>
 
  <p align="center">
-   <img src="https://img.shields.io/github/downloads/sosauce/CuteMusic/total?style=for-the-badge&logo=github&color=f5a6bd"/>
-   <img src="https://img.shields.io/github/v/release/sosauce/CuteMusic?style=for-the-badge&logo=github&color=f5a6bd"/>
+   <img src="https://img.shields.io/github/downloads/sosauce/Chocola/total?style=for-the-badge&logo=github&color=f5a6bd"/>
+   <img src="https://img.shields.io/github/v/release/sosauce/Chocola?style=for-the-badge&logo=github&color=f5a6bd"/>
    <image src="https://img.shields.io/badge/Kotlin-100%25-f5a6bd?style=for-the-badge&logo=Kotlin"/>
  </p> 
 
 <p align="center">
-  <a href="https://github.com/sosauce/CuteMusic/releases">
+  <a href="https://github.com/sosauce/Chocola/releases">
     <img src="https://i.ibb.co/q0mdc4Z/get-it-on-github.png" height="80" />
   </a>
   <a href="https://apt.izzysoft.de/fdroid/index/apk/com.sosauce.cutemusic">
@@ -81,7 +81,7 @@ Puede encontrar una copia de la Licencia Pública General GNU v3 [aquí](https:/
 
 ---
 
-Para empezar a contribuir, consulte el [readme de introducción](https://github.com/sosauce/CuteMusic/blob/main/GET_STARTED.md).
+Para empezar a contribuir, consulte el [readme de introducción](https://github.com/sosauce/Chocola/blob/main/GET_STARTED.md).
 
 ---
 

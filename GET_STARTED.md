@@ -22,14 +22,14 @@ CuteApps currently don't have a lot of guidelines, but it is best if you follow 
 
 1. **Clone the repository:**
    ```sh
-   git clone https://github.com/sosauce/CuteMusic.git
-   cd CuteMusic
+   git clone https://github.com/sosauce/Chocola.git
+   cd Chocola
    ```
 
 2. **Open the project in Android Studio:**
    - Open Android Studio.
    - Select `Open an existing project`.
-   - Navigate to the `CuteMusic` directory and select it.
+   - Navigate to the `Chocola` directory and select it.
 
 3. **Build the project:**
    - Click on `Build` in the top menu.
