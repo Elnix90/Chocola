@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="theme">थिम</string>
+    <string name="settings">सेटिङहरू</string>
+    <string name="dark_mode">डार्क</string>
+    <string name="light_mode">लाइट</string>
+    <string name="amoled_mode">AMOLED_मोड</string>
+    <string name="size">आकार</string>
+    <string name="type">प्रकार</string>
+    <string name="bitrate">बिटरेट</string>
+    <string name="previous_song">अघिल्लो गीत</string>
+    <string name="play_pause_button">प्ले/पज बटन</string>
+    <string name="next_button">अर्को गीत</string>
+    <string name="no_artists_found">कुनै कलाकार भेटिएन!</string>
+    <string name="artwork">कभर चित्र</string>
+    <string name="artists">कलाकारहरू</string>
+    <string name="albums">एल्बम</string>
+    <string name="app_icon">एप आइकन</string>
+    <string name="close">बन्द गर्नुहोस्</string>
+    <string name="request_permission">अनुमति दिनुहोस्</string>
+    <string name="next_step">अर्को चरण</string>
+    <string name="no_music_title">कुनै ट्र्याक भेटिएन!</string>
+    <string name="no_music_desc">त्यसो भए तपाईंले एप किन इन्स्टल गर्नुभयो?</string>
+    <string name="no_music_tip">सुझाव: स्क्यान गर्न चाहनुभएको फोल्डरहरूलाई सेटिङहरूमा व्हाइटलिस्ट गर्न नबिर्सनुहोस्!</string>
+</resources>

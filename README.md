@@ -2,9 +2,6 @@
 <h1 align="center">Chocola</h1>
 <p align="center">Chocola (<a href="https://medium.com/p/1a1f37640370">formerly CuteMusic</a>) is a cute and powerful offline music player for Android!</p>
 
-> [!WARNING]
-> Chocola is undergoing a rewrite to bring more performance, stability, features and scalability
-
  <p align="center">
    <img src="https://img.shields.io/github/downloads/sosauce/CuteMusic/total?style=for-the-badge&logo=github&color=f5a6bd"/>
    <img src="https://img.shields.io/github/v/release/sosauce/CuteMusic?style=for-the-badge&logo=github&color=f5a6bd"/>
@@ -99,7 +96,7 @@ To get started with contributing, please check the [get started readme](https://
 
 ---
 
-#### You can find the SHA-256 [here](https://sosauce.github.io/projects/)
+#### You can find the SHA-256 [here](https://sosauce.vercel.app/projects)
 
 ---
 

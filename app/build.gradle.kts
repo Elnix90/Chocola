@@ -9,7 +9,9 @@ plugins {
 }
 
 androidComponents {
-    onVariants(selector().withBuildType("release")) { variant ->
+    val releaseVariant = selector().withBuildType("release")
+
+    onVariants(releaseVariant) { variant ->
         val mainOutput = variant.outputs.single { it.outputType == VariantOutputConfiguration.OutputType.SINGLE }
 
         @Suppress("UnstableApiUsage")
@@ -25,8 +27,8 @@ android {
         applicationId = "com.sosauce.cutemusic"
         minSdk = 28
         targetSdk = 37
-        versionCode = 50008
-        versionName = "4.4.0"
+        versionCode = 50014
+        versionName = "4.4.6"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
@@ -37,18 +39,20 @@ android {
         }
     }
 
+
     signingConfigs {
         create("release") {
-
-            val keystoreFile = file("release_key.jks")
-
-            if (keystoreFile.exists()) {
-                storeFile = keystoreFile
-                storePassword = System.getenv("SIGNING_STORE_PASSWORD")
-                keyAlias = System.getenv("SIGNING_KEY_ALIAS")
-                keyPassword = System.getenv("SIGNING_KEY_PASSWORD")
+            val keystoreFile = System.getenv("KEYSTORE_FILE")
+            val keystorePassword = System.getenv("KEYSTORE_PASSWORD")
+            val keyAlias = System.getenv("KEY_ALIAS")
+            val keyPassword = System.getenv("KEY_PASSWORD")
+            if (keystoreFile != null && keystorePassword != null && keyAlias != null && keyPassword != null) {
+                storeFile = file(keystoreFile)
+                storePassword = keystorePassword
+                this.keyAlias = keyAlias
+                this.keyPassword = keyPassword
             } else {
-                println("No keystore found, APK will be unsigned")
+                println("App won't be signed!")
             }
         }
     }
@@ -97,6 +101,7 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.ui)
+    debugImplementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.datastore.preferences)
@@ -113,7 +118,7 @@ dependencies {
     implementation(libs.material.kolor)
     implementation(libs.koin.androidx.startup)
     implementation(libs.taglib)
-    debugImplementation(libs.androidx.ui.tooling)
+    implementation(libs.androidx.ui.tooling)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.emoji2.emojipicker)
     implementation(libs.kmpalette.core)
@@ -129,9 +134,13 @@ dependencies {
     implementation(libs.androidx.compose.animation.graphics.android)
     implementation(libs.lyrics.core)
     implementation(libs.androidx.compose.foundation)
-    implementation(libs.colorpicker.compose)
     implementation(libs.sweetselect.compose)
     implementation(libs.squircle.shape)
     implementation(libs.cloudy)
+    implementation(libs.nekobites)
+    implementation(libs.haze.blur)
+    implementation(libs.haze.blur.materials)
+    implementation(libs.haze.blur.material3)
+
 }
 

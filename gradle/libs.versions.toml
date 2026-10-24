@@ -1,43 +1,46 @@
 [versions]
-agp = "9.3.2"
+agp = "9.4.1"
 cloudy = "0.7.1"
-colorpickerCompose = "1.2.0"
-emoji2Emojipicker = "1.6.0"
-glance = "1.2.0-rc01"
-haze = "1.7.2"
-hazeMaterials = "1.7.2"
+emoji2Emojipicker = "1.7.0"
+glance = "1.2.0"
+haze = "2.0.1"
+hazeBlur = "2.0.1"
+hazeBlurMaterial3 = "2.0.1"
+hazeBlurMaterials = "2.0.1"
+hazeMaterials = "1.7.3"
 koinAndroid = "4.2.2"
 koinAndroidxCompose = "4.2.2"
 koinAndroidxStartup = "4.2.2"
-kotlin = "2.4.10"
+kotlin = "2.4.21"
 activityCompose = "1.13.0"
-coilCompose = "3.5.0"
-composeBom = "2026.08.00"
-composeAnimation = "1.12.0"
-coreKtx = "1.19.0"
+coilCompose = "3.6.3"
+composeBom = "2026.09.00"
+composeAnimation = "1.12.1"
+coreKtx = "1.19.1"
 coreSplashscreen = "1.2.0"
 datastorePreferences = "1.2.1"
 kotlinxSerializationJson = "1.11.0"
-lyricsCore = "0.4.7"
-materialKolor = "5.0.0"
-media3Common = "1.11.0"
-media3Effect = "1.11.0"
-media3Exoplayer = "1.11.0"
-media3Session = "1.11.0"
-media3Transformer = "1.11.0"
+lyricsCore = "0.5.0"
+materialKolor = "5.0.1"
+media3Common = "1.11.1"
+media3Effect = "1.11.1"
+media3Exoplayer = "1.11.1"
+media3Session = "1.11.1"
+media3Transformer = "1.11.1"
+nekobites = "1.0.6"
 reorderable = "3.1.0" # https://github.com/Calvin-LL/Reorderable
-serialization = "2.4.10"
+serialization = "2.4.21"
 squircleShape = "5.4.0"
 sweetselectCompose = "1.0.1"
 taglib = "1.0.6"
-roomCompiler = "2.8.4"
-roomKtx = "2.8.4"
+roomCompiler = "2.8.5"
+roomKtx = "2.8.5"
 ksp = "2.3.6"
 kmpalette = "3.1.0"
-material3 = "1.5.0-alpha26"
-nav3Core = "1.1.6"
+material3 = "1.5.0-beta01"
+nav3Core = "1.2.0"
 lifecycleViewmodelNav3 = "2.11.0"
-foundation = "1.12.0"
+foundation = "1.12.1"
 
 
 
@@ -63,10 +66,13 @@ androidx-media3-session = { module = "androidx.media3:media3-session", version.r
 androidx-media3-transformer = { module = "androidx.media3:media3-transformer", version.ref = "media3Transformer" }
 androidx-ui = { module = "androidx.compose.ui:ui" }
 androidx-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
+androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 cloudy = { module = "com.github.skydoves:cloudy", version.ref = "cloudy" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
-colorpicker-compose = { module = "com.github.skydoves:colorpicker-compose", version.ref = "colorpickerCompose" }
 haze = { module = "dev.chrisbanes.haze:haze", version.ref = "haze" }
+haze-blur = { module = "dev.chrisbanes.haze:haze-blur", version.ref = "hazeBlur" }
+haze-blur-material3 = { module = "dev.chrisbanes.haze:haze-blur-material3", version.ref = "hazeBlurMaterial3" }
+haze-blur-materials = { module = "dev.chrisbanes.haze:haze-blur-materials", version.ref = "hazeBlurMaterials" }
 haze-materials = { module = "dev.chrisbanes.haze:haze-materials", version.ref = "hazeMaterials" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koinAndroid" }
 koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koinAndroidxCompose" }
@@ -74,6 +80,7 @@ koin-androidx-startup = { module = "io.insert-koin:koin-androidx-startup", versi
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 lyrics-core = { module = "com.mocharealm.accompanist:lyrics-core", version.ref = "lyricsCore" }
 material-kolor = { module = "com.materialkolor:material-kolor", version.ref = "materialKolor" }
+nekobites = { module = "com.github.sosauce:NekoBites", version.ref = "nekobites" }
 reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
 squircle-shape = { module = "com.stoyanvuchev:squircle-shape", version.ref = "squircleShape" }
 sweetselect-compose = { module = "io.github.sosauce:sweetselect-compose", version.ref = "sweetselectCompose" }
